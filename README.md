@@ -6,10 +6,10 @@ This is the source code repo for our emperical study on multi-dimensional learne
 ### Learned Indices
 We compare **six** recent multi-dimensional learned indices:
 - **ZM-Index** [1]
-- **ML-Index** [2] 
-- **IF-Index** [3] 
-- **RSMI** [4]  
-- **LISA** [5] 
+- **ML-Index** [2]
+- **IF-Index** [3]
+- **RSMI** [4]
+- **LISA** [5]
 - **Flood** [6]
 
 ### Non-learned Baselines
@@ -22,15 +22,15 @@ We compare **six** recent multi-dimensional learned indices:
 
 ## Compilation
 ### Step 1: Setup Dependencies
-- `boost 1.79`: https://www.boost.org/users/history/version_1_79_0.html
-- `TPIE`: https://github.com/thomasmoelhave/tpie
+- `boost 1.79`: https://www.boost.org/users/history/version_1_79_0.html 步骤1 ./bootstrap.sh --prefix=/usr/local 2 ./b2 3 ./b2 install
+- `TPIE`: https://github.com/thomasmoelhave/tpie(在主目录下编译安装)
 - `GEOS`: https://libgeos.org/
 - `gperftools`: https://github.com/gperftools/gperftools
 - `libtorch`: https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.4.0%2Bcpu.zip
 - `numpy` and `matplotlib` for result visualization
 
 ### Step 2: Build RSMI and ANN
-Most of the benchmark and indices (except `RSMI` and `ANN`) are implemented as header-only libraries. 
+Most of the benchmark and indices (except `RSMI` and `ANN`) are implemented as header-only libraries.
 
 Compile `RSMI`:
 ```sh
@@ -38,12 +38,14 @@ cd indexes/rsmi
 mkdir build && cd build
 cmake ..
 make
+[S]
 ```
 
 Compile `ANN`:
 ```sh
 cd indexes/ann_1.1.2
-make
+make linux-g++
+[Failed,暂时没空搞懂原因，直接从官网下载了一个官方版本作为替代]
 ```
 
 ### Step 3: Build Benchmark
@@ -59,6 +61,9 @@ Compile RSMI benchmark:
 mkdir build && cd build
 cmake .. -DRSMI=ON
 make
+[Failed,没有规则可制作目标“/home/metetor/learnedbench/indexes/rsmi/build/librsmi.a,由“/home/metetor/learnedbench/build/bin/bench_rsmi” 需求]
+[Checkout:CMakeLists.txt中RSMI和ANN路径错误，并不在/home文件夹下]
+[S]
 ```
 
 Compile RSMI benchmark with heap profiling enabled:
@@ -66,6 +71,9 @@ Compile RSMI benchmark with heap profiling enabled:
 rm -rf * # clear cmake cache
 cmake .. -DRSMI=ON -DPROFILE=ON
 make
+[Failed,1.bench_rsmi.cpp:55:31: error: ‘DIM’ was not declared in this scope]
+[Checkout:将DIM改成BENCH_DIM]
+[S]
 ```
 
 Compile benchmark for other indices:
@@ -73,6 +81,7 @@ Compile benchmark for other indices:
 rm -rf * # clear cmake cache
 cmake ..
 make
+[S]
 ```
 
 Compile benchmark for other indices with heap profiling enabled:
@@ -80,6 +89,7 @@ Compile benchmark for other indices with heap profiling enabled:
 rm -rf * # clear cmake cache
 cmake .. -DPROFILE=ON
 make
+[S]
 ```
 
 ## Run Experiments
@@ -87,6 +97,16 @@ We prepare a script to download the real datasets and prepare synthetic datasets
 ```sh
 cd scripts
 bash prepare_data.sh
+[Failed,1.mkdir语法错误,无法创建目录]
+[Checkout,1.mkdir "$PATH",才会解释为变量]
+[S]
+[Failed,2.真实文件夹无法下载，疑似没有cookie文件]
+[Checkout,先将现在真实数据集代码注释掉，只生成合成数据集]
+[TODO]
+[Try,下载并使用python预处理nyc-tlc的2016-01-2016-06的数据集]
+[Failed,3.generate synthetic data failed]
+[Checkout,文件路径错误，CMakeLists.txt中生成执行文件路径错误，and prepare_data.sh中的BENCH_BIN路径错误]
+[S]
 ```
 
 We prepare several scripts to run the experiments.

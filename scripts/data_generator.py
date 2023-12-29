@@ -9,7 +9,7 @@ from pandas.core.reshape.merge import merge
 np.random.seed(999)
 
 
-DATA_PATH = "./data/"
+DATA_PATH = "../data/"
 
 
 # generate n d-dimensional uniform points in range [0, r]
@@ -22,7 +22,7 @@ def uniform(n, d, r):
 def gaussian(n, d, s):
     data = np.random.normal(0.0, s, [n, d])
     np.savetxt("{prefix}/synthetic/gaussian_{n}_{d}_{s}.csv".format(prefix=DATA_PATH, n=n, d=d, s=s), data, delimiter=',')
-    
+
 
 # generate n d-dimensional points from a lognormal distribution mean=0 sigma=s
 def lognormal(n, d, s):
@@ -30,7 +30,7 @@ def lognormal(n, d, s):
     np.savetxt("{prefix}/synthetic/lognormal{n}_{d}_{s}.csv".format(prefix=DATA_PATH, n=n, d=d, s=s), data, delimiter=',')
 
 
-# generate TPC-H data with a specified scale factor 
+# generate TPC-H data with a specified scale factor
 # 4 columns of lineitem table is used (l_quantity, l_extendedprice, l_discount, l_tax)
 # scale factor effect: #rows = 6 * s Million
 def tpc(s):
@@ -83,7 +83,7 @@ def checkdir():
 
 if __name__ == "__main__":
     checkdir()
-    
+
     parser = argparse.ArgumentParser(description="Generate datasets.")
     parser.add_argument("--dist", type=str, nargs="?", help="distribution")
     parser.add_argument("-n", type=int, nargs="?", help="number of points")

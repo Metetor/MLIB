@@ -16,7 +16,7 @@ using Point = point_t<BENCH_DIM>;
 using Box = box_t<BENCH_DIM>;
 using Points = std::vector<point_t<BENCH_DIM>>;
 
-const std::string MODEL_PATH = "/home/qiyu/learnedbench/model_path/";
+const std::string MODEL_PATH = "/mnt/hgfs/MLIB/model_path/";
 
 // extract filename from a path
 std::string get_filename(const std::string& path) {
@@ -43,16 +43,16 @@ int main(int argc, char **argv) {
     std::string model_path = MODEL_PATH + pure_fname;
     model_path.push_back('/');
 
-    
+
     if (! boost::filesystem::is_directory(model_path)) {
         boost::filesystem::create_directory(model_path);
     }
-    
+
     std::cout << "Will save/load model to/from " << model_path << std::endl;
 
 #ifdef HEAP_PROFILE
     // directly exit if heap profiling is enabled
-    bench::index::RSMIWrapper<DIM> rsmi(points, model_path);
+    bench::index::RSMIWrapper<BENCH_DIM> rsmi(points, model_path);
     return 0;
 #endif
 

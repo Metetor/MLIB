@@ -1,9 +1,9 @@
 #!/bin/bash
 
 DATA_PATH="../data/"
-BENCH_BIN="../build/datagen"
+BENCH_BIN="../build/bin/datagen"
 
-mkdir DATA_PATH
+mkdir "${DATA_PATH}"
 
 REAL_DATA_PATH="${DATA_PATH}real/"
 SYN_DATA_PATH="${DATA_PATH}synthetic/"
@@ -13,19 +13,19 @@ mkdir $SYN_DATA_PATH
 mkdir "${SYN_DATA_PATH}Default"
 
 
+#the link to real datasets is invalid
+# real data
+#echo "Download real datasets..."
+#wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=11SaFlD7VifETSgSfsQzKNUrE4SW9Cz47' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=11SaFlD7VifETSgSfsQzKNUrE4SW9Cz47" -O real_data.zip && rm -rf /tmp/cookies.txt
 
-# real data 
-echo "Download real datasets..."
-wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=11SaFlD7VifETSgSfsQzKNUrE4SW9Cz47' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=11SaFlD7VifETSgSfsQzKNUrE4SW9Cz47" -O real_data.zip && rm -rf /tmp/cookies.txt
-
-if [ -f real_data.zip ]; then
-    unzip -d $REAL_DATA_PATH real_data.zip
-    rm real_data.zip
-else
-    echo "Download failed."
-    echo "Please manualy download the dataset from https://drive.google.com/file/d/11SaFlD7VifETSgSfsQzKNUrE4SW9Cz47/view"
-    echo "Then unzip it to ${REAL_DATA_PATH}."
-fi
+#if [ -f real_data.zip ]; then
+#    unzip -d $REAL_DATA_PATH real_data.zip
+#    rm real_data.zip
+#else
+#    echo "Download failed."
+#    echo "Please manualy download the dataset from https://drive.google.com/file/d/11SaFlD7VifETSgSfsQzKNUrE4SW9Cz47/view"
+#    echo "Then unzip it to ${REAL_DATA_PATH}."
+#fi
 
 
 # synthetic data
@@ -41,12 +41,12 @@ do
     for n in 1 10 50 100
     do
         fname="${dist}_${n}m_${DEFAULT_D}_${DEFAULT_S}"
-        real_n=$[$n * $MILLION] 
+        real_n=$[$n * $MILLION]
         $BENCH_BIN -t gen_data -f $fname --dist $dist -n $real_n -d $DEFAULT_D -s $DEFAULT_S
         mv $fname "${SYN_DATA_PATH}"
     done
 done
-    
+
 # varying dimension d
 echo "Generate data by varying different Dim..."
 for dist in "uniform" "gaussian" "lognormal"

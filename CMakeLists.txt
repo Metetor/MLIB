@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(learnedbench)
+project(mlib)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -16,11 +16,11 @@ option(PROFILE "whether starting heap profile" OFF)
 option(RSMI "whether building RSMI" OFF)
 
 
-set(BOOST_ROOT "/home/qiyu/boost_1_79_0")
-set(Boost_INCLUDE_DIR "/home/qiyu/boost_1_79_0")
-set(Boost_LIBRARY_DIR "/home/qiyu/boost_1_79_0/stage/lib")
+set(BOOST_ROOT "/home/metetor/boost_1_79_0")
+set(Boost_INCLUDE_DIR "/home/metetor/boost_1_79_0")
+set(Boost_LIBRARY_DIR "/home/metetor/boost_1_79_0/stage/lib")
 
-SET(EXECUTABLE_OUTPUT_PATH "/home/qiyu/learnedbench/build/bin")
+SET(EXECUTABLE_OUTPUT_PATH "/mnt/hgfs/MLIB/build/bin")
 
 # check dependencies
 find_package(TPIE REQUIRED)
@@ -34,16 +34,16 @@ endif()
 
 if(RSMI)
   # the RSMI benchmark needs to be compiled using cxx14
-  # the dependency libtorch can be downloaded from 
+  # the dependency libtorch can be downloaded from
   set(CMAKE_CXX_STANDARD 14)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-  set(TORCH_PATH "/home/qiyu/libtorch")
+  set(TORCH_PATH "/home/metetor/libtorch")
   list(APPEND CMAKE_PREFIX_PATH TORCH_PATH)
   find_package(Torch REQUIRED PATHS ${TORCH_PATH} CONFIG)
 
   # RSMI library path
-  set(RSMI_PATH "/home/qiyu/learnedbench/indexes/rsmi")
+  set(RSMI_PATH "/mnt/hgfs/MLIB/indexes/rsmi")
 
   include_directories(${Boost_INCLUDE_DIR} ${TPIE_INCLUDE_DIRS} ${RSMI_PATH})
 
@@ -61,7 +61,7 @@ else()
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
   # ANN library path
-  set(ANN_PATH "/home/qiyu/learnedbench/indexes/ann_1.1.2")
+  set(ANN_PATH "/mnt/hgfs/MLIB/indexes/ann_1.1.2")
 
   include_directories(${Boost_INCLUDE_DIR} ${TPIE_INCLUDE_DIRS} ${RSMI_PATH} ${ANN_PATH})
 
@@ -75,7 +75,7 @@ else()
     # add_executable(bench2d_default bench/bench.cpp)
     # target_link_libraries(bench2d_default ${TPIE_LIBRARIES} Boost::program_options GEOS::geos pthread "${ANN_PATH}/lib/libANN.a")
     # target_compile_definitions(bench2d_default PUBLIC PARTITION_NUM=100)
-    
+
     # add_executable(bench2d_fs bench/bench.cpp)
     # target_link_libraries(bench2d_fs ${TPIE_LIBRARIES} Boost::program_options GEOS::geos pthread "${ANN_PATH}/lib/libANN.a")
     # target_compile_definitions(bench2d_fs PUBLIC PARTITION_NUM=60)
@@ -188,7 +188,7 @@ else()
     target_link_libraries(bench3d_toronto ${TPIE_LIBRARIES} Boost::program_options GEOS::geos pthread "${ANN_PATH}/lib/libANN.a")
     target_compile_definitions(bench3d_toronto PUBLIC BENCH_DIM=3 PARTITION_NUM=20)
 
-    
+
   endif()
 endif()
 

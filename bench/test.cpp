@@ -23,14 +23,14 @@ std::string get_filename(const std::string& path) {
 int main() {
     vec_of_point_t<2> points;
 
-    std::cout << get_filename("/home/qiyu/learnedbench/data/synthetic/uniform_20m_2_1") << std::endl;
-    
-    bench::utils::read_points(points, "/home/qiyu/learnedbench/data/synthetic/uniform_20m_2_1", 20000000);
-    
+    std::cout << get_filename("/mnt/hgfs/MLIB/data/synthetic/uniform_20m_2_1") << std::endl;
+
+    bench::utils::read_points(points, "/mnt/hgfs/MLIB/data/synthetic/uniform_20m_2_1", 20000000);
+
     // bench::index::RTree<2, 64> rt(points);
     // bench::query::batch_range_queries(rt, range_queries);
 
-    
+
     point_t<2> min_c = {0.0, 0.0};
     point_t<2> max_c = {0.1, 0.1};
     box_t<2> qb(min_c, max_c);
@@ -41,9 +41,9 @@ int main() {
 
     // bench::index::LISA2<4, 10, 64> lisa2(points);
 
-    
-    
-    
+
+
+
     // std::cout << rt.range_query(q).size() << std::endl;
     // std::cout << "build time " << rt.get_build_time() << std::endl;
     // std::cout << "range query time " << rt.get_range_time() << std::endl;
@@ -55,7 +55,7 @@ int main() {
     // std::cout << "range query time " << mli.get_range_time() << std::endl;
     // std::cout << "index size " << mli.index_size() << std::endl;
 
-    
+
     // bench::index::Flood<4, 10, 64> flood(points);
     // std::cout << flood.range_query(q).size() << std::endl;
     // std::cout << "build time " << flood.get_build_time() << std::endl;
@@ -69,7 +69,7 @@ int main() {
     // std::cout << "query time" << lisa.get_range_time() << std::endl;
     // std::cout << "knn query time " << lisa.get_knn_time() << std::endl;
     // std::cout << "index size" << lisa.index_size() << std::endl;
-    
+
 
     // bench::index::IFIndex<2, 2048, 64> ifidx(points);
     // std::cout << ifidx.range_query(q).size() << std::endl;
