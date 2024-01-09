@@ -22,7 +22,7 @@ std::string get_filename(const std::string &path)
 
 int main()
 {
-    vec_of_point_t<2> points;
+    points_t<2> points;
 
     std::cout << get_filename("/mnt/hgfs/MLIB/data/synthetic/uniform_20m_2_1") << std::endl;
 

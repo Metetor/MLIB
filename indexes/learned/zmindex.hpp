@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "../base_index.hpp"
+#include "../indexInterface.h"
 #include "../../utils/type.hpp"
 #include "../../utils/common.hpp"
 #include "../pgm/pgm_index.hpp"
@@ -212,5 +213,14 @@ namespace bench
             }
         };
 
+        // Epsilon: the error bound of the underlying 1-D learned index
+        template <class KEY_TYPE,size_t Dim, size_t Epsilon = 64>
+        class ZMIndexInterface:public IndexInterface<KEY_TYPE,Dim>
+        {
+            using Index = pgm::MultidimensionalPGMIndex<Dim, size_t, Epsilon>;
+        public:
+            
+        private:
+        };
     }
 }

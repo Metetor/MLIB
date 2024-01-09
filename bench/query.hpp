@@ -16,7 +16,7 @@ namespace bench
         // sample queries from data
         // sample point queries
         template <size_t dim>
-        static std::vector<point_t<dim>> sample_point_queries(vec_of_point_t<dim> &points, size_t s = 100)
+        static std::vector<point_t<dim>> sample_point_queries(points_t<dim> &points, size_t s = 100)
         {
             // seed the generator
             std::mt19937 gen(0);
@@ -39,12 +39,12 @@ namespace bench
         // k is in range {1, 10, 100, 500, 1000, 10000}
         // each k has s=100 samples
         template <size_t dim>
-        static std::map<size_t, vec_of_point_t<dim>> sample_knn_queries(vec_of_point_t<dim> &points, size_t s = 100)
+        static std::map<size_t, points_t<dim>> sample_knn_queries(points_t<dim> &points, size_t s = 100)
         {
             int ks[6] = {1, 10, 100, 500, 1000, 10000};
             auto query_points = sample_point_queries(points, s);
 
-            std::map<size_t, vec_of_point_t<dim>> knn_queries;
+            std::map<size_t, points_t<dim>> knn_queries;
 
             for (auto k : ks)
             {
@@ -83,7 +83,7 @@ namespace bench
         // selectivity = range_count(q_box) / N
         // for each selectivity we generate s=10 random boxes roughly match the selectivity
         template <size_t dim>
-        static std::vector<std::pair<box_t<dim>, size_t>> sample_range_queries(vec_of_point_t<dim> &points, size_t s = 10)
+        static std::vector<std::pair<box_t<dim>, size_t>> sample_range_queries(points_t<dim> &points, size_t s = 10)
         {
             double selectivities[5] = {0.001, 0.01, 0.05, 0.1, 0.2};
             auto corner_points = sample_point_queries(points, s);
@@ -116,7 +116,7 @@ namespace bench
         }
 
         template <class Index, size_t Dim>
-        static void batch_knn_queries(Index &index, std::map<size_t, vec_of_point_t<Dim>> &knn_queries)
+        static void batch_knn_queries(Index *&index, std::map<size_t, points_t<Dim>> &knn_queries)
         {
             int ks[6] = {1, 10, 100, 500, 1000, 10000};
 
@@ -124,15 +124,15 @@ namespace bench
             {
                 for (auto &q_point : knn_queries[k])
                 {
-                    index.knn_query(q_point, k);
+                    index->knn_query(q_point, k);
                 }
-                std::cout << "k=" << k << " Avg. Time: " << index.get_avg_knn_time() << " [us]" << std::endl;
-                index.reset_timer();
+                std::cout << "k=" << k << " Avg. Time: " << index->get_avg_knn_time() << " [us]" << std::endl;
+                index->reset_timer();
             }
         }
 
         template <class Index, size_t Dim>
-        static void batch_range_queries(Index &index, std::vector<std::pair<box_t<Dim>, size_t>> range_queries)
+        static void batch_range_queries(Index *&index, std::vector<std::pair<box_t<Dim>, size_t>> range_queries)
         {
             // pair (range_cnt, time)
             std::vector<std::pair<size_t, long>> range_time;
@@ -140,9 +140,9 @@ namespace bench
 
             for (auto &box : range_queries)
             {
-                index.range_query(box.first);
-                range_time.emplace_back(box.second, index.get_range_time());
-                index.reset_timer();
+                index->range_query(box.first);
+                range_time.emplace_back(box.second, index->get_range_time());
+                index->reset_timer();
             }
 
             // sort by range_cnt
@@ -154,7 +154,7 @@ namespace bench
 
             // print time ordered by selectivity
             size_t bucket_size = range_time.size() / 5;
-            size_t N = index.count();
+            size_t N = index->count();
             std::vector<std::pair<size_t, long>> temp;
             size_t cnt = 0;
 

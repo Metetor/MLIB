@@ -3,7 +3,7 @@
 #include "../ann_1.1.2/include/ANN/ANN.h"
 #include "../../utils/type.hpp"
 #include "../../utils/common.hpp"
-#include "../base_index.hpp"
+#include "../indexInterface.h"
 
 #include <algorithm>
 #include <array>
@@ -21,171 +21,190 @@ namespace bench
 {
     namespace index
     {
-
-        template <size_t Dim>
-        class ANNKDTree : public BaseIndex
+        template <class KEY_TYPE, size_t Dim>
+        class ANNKDTreeInterface : public IndexInterface<KEY_TYPE, Dim>
         {
-
-            using Point = point_t<Dim>;
-            using Box = box_t<Dim>;
-            using Points = std::vector<point_t<Dim>>;
-
         public:
-            inline ANNKDTree(Points &points)
-            {
-                std::cout << "Construct ANNKDTree..." << std::endl;
-                this->num_of_points = points.size();
+            ANNKDTreeInterface() : index(nullptr), points_num(0) {}
 
-                auto kdtree_pts = annAllocPts(points.size(), Dim);
-
-                for (size_t i = 0; i < points.size(); ++i)
-                {
-                    for (size_t j = 0; j < Dim; ++j)
-                    {
-                        kdtree_pts[i][j] = points[i][j];
-                    }
-                }
-
-                auto start = std::chrono::steady_clock::now();
-
-#ifdef HEAP_PROFILE
-                HeapProfilerStart("annkdtree");
-#endif
-
-                index = new ANNkd_tree(kdtree_pts, points.size(), Dim);
-
-#ifdef HEAP_PROFILE
-                HeapProfilerDump("final");
-                HeapProfilerStop();
-#endif
-
-                auto end = std::chrono::steady_clock::now();
-
-                build_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-                std::cout << "Build Time: " << get_build_time() << " [ms]" << std::endl;
-            }
-
-            ~ANNKDTree()
+            ~ANNKDTreeInterface()
             {
                 delete index;
                 annClose();
             }
 
-            inline Points knn_query(Point &q, size_t k, double eps = 0.0)
+            inline size_t count() { return this->points_num; }
+
+            void build(const std::vector<KEY_TYPE> &points);
+            /// @brief ANNKDTree dosen't support range_query
+            /// @param box
+            /// @return
+            std::vector<KEY_TYPE> range_query(const box_t<Dim> &box)
             {
-                std::vector<ANNidx> nn_idx;
-                std::vector<ANNdist> nn_dist;
-                nn_idx.resize(k);
-                nn_dist.resize(k);
-
-                auto start = std::chrono::steady_clock::now();
-                index->annkSearch(&q[0], k, &nn_idx[0], &nn_dist[0], eps);
-                auto end = std::chrono::steady_clock::now();
-                knn_count++;
-                knn_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-
-                Points result;
-                result.reserve(k);
-
-                for (auto idx : nn_idx)
-                {
-                    Point p;
-                    auto temp_pt = index->thePoints()[idx];
-
-                    for (size_t i = 0; i < Dim; ++i)
-                    {
-                        p[i] = temp_pt[i];
-                    }
-
-                    result.emplace_back(p);
-                }
-
-                return result;
+                std::cerr << "Error: range_query is not supported for ANNKDTree." << std::endl;
+                return {}; // 返回一个空的结果
             }
 
-            inline size_t count()
+            std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q, unsigned int k)
             {
-                return this->num_of_points;
+                return this->knn_query(q, k, 0.0);
             }
+
+            std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q,
+                                            unsigned int k, double eps);
 
         private:
-            size_t num_of_points;
+            size_t points_num;
             ANNkd_tree *index; // internal kd-tree index
         };
 
-        template <size_t Dim, size_t BucketSize = 1>
-        class ANNBoxDecompositionTree
+        // func impl
+        template <class KEY_TYPE, size_t Dim>
+        void ANNKDTreeInterface<KEY_TYPE, Dim>::build(const std::vector<KEY_TYPE> &points)
         {
+            std::cout << "Construct ANNKDTree..." << std::endl;
+            this->points_num = points.size();
 
-            using Point = point_t<Dim>;
-            using Box = box_t<Dim>;
-            using Points = std::vector<point_t<Dim>>;
+            auto akdtree_pts = annAllocPts(points.size(), Dim);
 
-        public:
-            inline ANNBoxDecompositionTree(Points &points)
+            for (size_t i = 0; i < points.size(); ++i)
             {
-                std::cout << "Construct ANNBDTree..." << std::endl;
-                this->num_of_points = points.size();
-
-                auto bdtree_pts = annAllocPts(points.size(), Dim);
-
-                for (size_t i = 0; i < points.size(); ++i)
+                for (size_t j = 0; j < Dim; ++j)
                 {
-                    for (size_t j = 0; j < Dim; ++j)
-                    {
-                        bdtree_pts[i][j] = points[i][j];
-                    }
+                    akdtree_pts[i][j] = points[i][j];
+                }
+            }
+
+            auto start = std::chrono::steady_clock::now();
+
+#ifdef HEAP_PROFILE
+            HeapProfilerStart("annkdtree");
+#endif
+
+            index = new ANNkd_tree(akdtree_pts, this->points_num, Dim);
+
+#ifdef HEAP_PROFILE
+            HeapProfilerDump("final");
+            HeapProfilerStop();
+#endif
+
+            auto end = std::chrono::steady_clock::now();
+            this->build_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+            std::cout << "Build Time: " << this->get_build_time() << " [ms]" << std::endl;
+        }
+
+        template <class KEY_TYPE, size_t Dim>
+        std::vector<KEY_TYPE> ANNKDTreeInterface<KEY_TYPE, Dim>::
+            knn_query(const KEY_TYPE &q, unsigned int k, double eps)
+        {
+            std::vector<ANNidx> nn_idx;
+            std::vector<ANNdist> nn_dist;
+            nn_idx.resize(k);
+            nn_dist.resize(k);
+
+            auto start = std::chrono::steady_clock::now();
+
+            // 创建中间变量 tmp 进行深拷贝
+            KEY_TYPE tmp = q;
+            // 传入中间变量，因为const不允许类型转换
+            index->annkSearch(tmp.data(), k, &nn_idx[0], &nn_dist[0], eps);
+            auto end = std::chrono::steady_clock::now();
+
+            this->knn_cnt++;
+            this->knn_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
+            std::vector<KEY_TYPE> result;
+            result.reserve(k);
+
+            for (auto idx : nn_idx)
+            {
+                KEY_TYPE p;
+                auto temp_pt = index->thePoints()[idx];
+
+                for (size_t i = 0; i < Dim; ++i)
+                {
+                    p[i] = temp_pt[i];
                 }
 
-                auto start = std::chrono::steady_clock::now();
-                index = new ANNbd_tree(bdtree_pts, points.size(), Dim, BucketSize);
-                auto end = std::chrono::steady_clock::now();
-                std::cout << "Construction time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " [ms]" << std::endl;
+                result.emplace_back(p);
             }
 
-            ~ANNBoxDecompositionTree()
-            {
-                delete index;
-                annClose();
-            }
+            return result;
+        }
+        // template <size_t Dim, size_t BucketSize = 1>
+        // class ANNBoxDecompositionTree
+        // {
 
-            inline Points knn_query(Point &q, size_t k, double eps = 0.0)
-            {
-                std::vector<ANNidx> nn_idx;
-                std::vector<ANNdist> nn_dist;
-                nn_idx.resize(k);
-                nn_dist.resize(k);
+        //     using Point = point_t<Dim>;
+        //     using Box = box_t<Dim>;
+        //     using Points = std::vector<point_t<Dim>>;
 
-                index->annkSearch(&q[0], k, &nn_idx[0], &nn_dist[0], eps);
+        // public:
+        //     inline ANNBoxDecompositionTree(Points &points)
+        //     {
+        //         std::cout << "Construct ANNBDTree..." << std::endl;
+        //         this->num_of_points = points.size();
 
-                Points result;
-                result.reserve(k);
+        //         auto bdtree_pts = annAllocPts(points.size(), Dim);
 
-                for (auto idx : nn_idx)
-                {
-                    Point p;
-                    auto temp_pt = index->thePoints()[idx];
+        //         for (size_t i = 0; i < points.size(); ++i)
+        //         {
+        //             for (size_t j = 0; j < Dim; ++j)
+        //             {
+        //                 bdtree_pts[i][j] = points[i][j];
+        //             }
+        //         }
 
-                    for (size_t i = 0; i < Dim; ++i)
-                    {
-                        p[i] = temp_pt[i];
-                    }
+        //         auto start = std::chrono::steady_clock::now();
+        //         index = new ANNbd_tree(bdtree_pts, points.size(), Dim, BucketSize);
+        //         auto end = std::chrono::steady_clock::now();
+        //         std::cout << "Construction time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " [ms]" << std::endl;
+        //     }
 
-                    result.emplace_back(p);
-                }
+        //     ~ANNBoxDecompositionTree()
+        //     {
+        //         delete index;
+        //         annClose();
+        //     }
 
-                return result;
-            }
+        //     inline Points knn_query(Point &q, size_t k, double eps = 0.0)
+        //     {
+        //         std::vector<ANNidx> nn_idx;
+        //         std::vector<ANNdist> nn_dist;
+        //         nn_idx.resize(k);
+        //         nn_dist.resize(k);
 
-            inline size_t count()
-            {
-                return this->num_of_points;
-            }
+        //         index->annkSearch(&q[0], k, &nn_idx[0], &nn_dist[0], eps);
 
-        private:
-            size_t num_of_points;
-            ANNbd_tree *index; // internal box decomposition tree index
-        };
+        //         Points result;
+        //         result.reserve(k);
+
+        //         for (auto idx : nn_idx)
+        //         {
+        //             Point p;
+        //             auto temp_pt = index->thePoints()[idx];
+
+        //             for (size_t i = 0; i < Dim; ++i)
+        //             {
+        //                 p[i] = temp_pt[i];
+        //             }
+
+        //             result.emplace_back(p);
+        //         }
+
+        //         return result;
+        //     }
+
+        //     inline size_t count()
+        //     {
+        //         return this->num_of_points;
+        //     }
+
+        // private:
+        //     size_t num_of_points;
+        //     ANNbd_tree *index; // internal box decomposition tree index
+        // };
 
     }
 }

@@ -12,6 +12,14 @@
 #define BENCH_DIM 2
 #endif
 
+#ifndef PARTITION_NUM
+#define PARTITION_NUM 10
+#endif
+
+#ifndef INDEX_ERROR_THRESHOLD
+#define INDEX_ERROR_THRESHOLD 64
+#endif
+
 using Point = point_t<BENCH_DIM>;
 using Points = std::vector<Point>;
 
@@ -26,7 +34,35 @@ IndexInterface<KEY_TYPE, Dim> *get_index(std::string index_type)
     }
     else if (index_type == "rstar")
     {
-        //index = new bench::index::RStarInterface<KEY_TYPE, Dim>;
+        index = new bench::index::RStarInterface<KEY_TYPE, Dim>;
+    }
+    else if (index_type == "kdtree")
+    {
+        // index = new bench::index::ANNKDTreeInterface<KEY_TYPE, Dim>;
+    }
+    else if (index_type == "ann")
+    {
+        index = new bench::index::ANNKDTreeInterface<KEY_TYPE, Dim>;
+    }
+    else if (index_type == "qdtree")
+    {
+        index = new bench::index::QDTreeInterface<KEY_TYPE, Dim>;
+    }
+    else if (index_type == "ug")
+    {
+        index = new bench::index::UGInterface<KEY_TYPE, Dim, PARTITION_NUM>;
+    }
+    else if (index_type == "edg")
+    {
+        index = new bench::index::EDGInterface<KEY_TYPE, Dim, PARTITION_NUM>;
+    }
+    else if (index_type == "fs")
+    {
+        // index=new bench::index::FSInterface<KEY_TYPE,Dim>;
+    }
+    else if (index_type == "zm")
+    {
+        // index=new bench::index::FSInterface<KEY_TYPE,DIM,INDEX_ERROR_THRESHOLD>;
     }
     else
     {
@@ -93,20 +129,25 @@ void IndexManager<KEY_TYPE, Dim>::build_index(IndexInf_t *&idxInf)
 template <class KEY_TYPE, size_t Dim>
 void IndexManager<KEY_TYPE, Dim>::handle_queries(IndexInf_t *&idxInf)
 {
-    auto range_queries = bench::query::sample_knn_queries(points);
+    auto range_queries = bench::query::sample_range_queries(points);
     auto knn_queries = bench::query::sample_knn_queries(points);
 
     if (idxInf != nullptr)
     {
-        if (mode == "range" || mode == "all")
+        if (mode == "range")
         {
             // Handle range queries
             bench::query::batch_range_queries(idxInf, range_queries);
         }
-        else if (mode == "knn" || mode == "all")
+        else if (mode == "knn")
         {
             // KNN queries
-            // bench::query::batch_knn_queries(*(index_ptr), knn_queries);
+            bench::query::batch_knn_queries(idxInf, knn_queries);
+        }
+        else if (mode == "all")
+        {
+            bench::query::batch_range_queries(idxInf, range_queries);
+            bench::query::batch_knn_queries(idxInf, knn_queries);
         }
         else
         {
@@ -129,5 +170,5 @@ void IndexManager<KEY_TYPE, Dim>::run()
 {
     IndexInf_t *idxInf;
     this->build_index(idxInf);
-    // this->handle_queries(idxInf);
+    this->handle_queries(idxInf);
 }

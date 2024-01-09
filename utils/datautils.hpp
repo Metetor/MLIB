@@ -108,7 +108,7 @@ namespace bench
         }
 
         template <size_t dim>
-        inline void read_points(vec_of_point_t<dim> &out_points, const std::string &fname, const size_t N)
+        inline void read_points(points_t<dim> &out_points, const std::string &fname, const size_t N)
         {
             out_points.reserve(N);
 
