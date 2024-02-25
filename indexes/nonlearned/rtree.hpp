@@ -39,11 +39,11 @@ namespace bench
                 return bench::common::get_boost_rtree_statistics(*index);
             }
 
-            void build(const std::vector<KEY_TYPE> &points);
+            void build(std::vector<KEY_TYPE> &points);
 
-            std::vector<KEY_TYPE> range_query(const box_t<Dim> &box);
+            std::vector<KEY_TYPE> range_query(box_t<Dim> &box);
 
-            std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q, unsigned int k);
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, unsigned int k);
 
         private:
             rtree_t *index;
@@ -51,7 +51,7 @@ namespace bench
         // func impl
         template <class KEY_TYPE, size_t Dim, size_t MaxElements>
         void RTreeInterface<KEY_TYPE, Dim, MaxElements>::
-            build(const std::vector<KEY_TYPE> &points)
+            build(std::vector<KEY_TYPE> &points)
         {
             // Implement the build function for RtreeInterface
             std::cout << "Construct R-tree "
@@ -70,7 +70,7 @@ namespace bench
 
         template <class KEY_TYPE, size_t Dim, size_t MaxElements>
         std::vector<KEY_TYPE> RTreeInterface<KEY_TYPE, Dim, MaxElements>::
-            range_query(const box_t<Dim> &box)
+            range_query(box_t<Dim> &box)
         {
             auto start = std::chrono::steady_clock::now();
             //
@@ -86,7 +86,7 @@ namespace bench
 
         template <class KEY_TYPE, size_t Dim, size_t MaxElements>
         std::vector<KEY_TYPE> RTreeInterface<KEY_TYPE, Dim, MaxElements>::
-            knn_query(const KEY_TYPE &q, unsigned int k)
+            knn_query(KEY_TYPE &q, unsigned int k)
 
         {
             auto start = std::chrono::steady_clock::now();
@@ -126,16 +126,16 @@ namespace bench
                 return bench::common::get_boost_rtree_statistics(*index);
             }
 
-            void build(const std::vector<KEY_TYPE> &points);
+            void build(std::vector<KEY_TYPE> &points);
 
-            std::vector<KEY_TYPE> range_query(const box_t<Dim> &box);
+            std::vector<KEY_TYPE> range_query(box_t<Dim> &box);
 
-            std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q, uint k);
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, uint k);
         };
 
         template <class KEY_TYPE, size_t Dim, size_t MaxElements>
         void RStarInterface<KEY_TYPE, Dim, MaxElements>::
-            build(const std::vector<KEY_TYPE> &points)
+            build(std::vector<KEY_TYPE> &points)
         {
             // Implement the build function for RStarInterface
             std::cout << "Construct R*-tree "
@@ -159,7 +159,7 @@ namespace bench
 
         template <class KEY_TYPE, size_t Dim, size_t MaxElements>
         std::vector<KEY_TYPE> RStarInterface<KEY_TYPE, Dim, MaxElements>::
-            range_query(const box_t<Dim> &box)
+            range_query(box_t<Dim> &box)
         {
             auto start = std::chrono::steady_clock::now();
 
@@ -176,7 +176,7 @@ namespace bench
 
         template <class KEY_TYPE, size_t Dim, size_t MaxElements>
         std::vector<KEY_TYPE> RStarInterface<KEY_TYPE, Dim, MaxElements>::
-            knn_query(const KEY_TYPE &q, uint k)
+            knn_query(KEY_TYPE &q, uint k)
         {
             auto start = std::chrono::steady_clock::now();
 

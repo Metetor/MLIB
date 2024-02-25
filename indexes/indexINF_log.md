@@ -9,5 +9,7 @@
     [range_query] [rtree:S] //
     [knn_query]:[rtree:S] //其他待做
     [type rename]:
-
+[const 修改]
+    因为好多函数都是非const限定，而build,range_query,knn_query的参数都有const限定符，造成了很大的麻烦，现在去掉const
+    [CS]
 ]

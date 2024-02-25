@@ -35,22 +35,22 @@ namespace bench
 
             inline size_t count() { return this->points_num; }
 
-            void build(const std::vector<KEY_TYPE> &points);
+            void build(std::vector<KEY_TYPE> &points);
             /// @brief ANNKDTree dosen't support range_query
             /// @param box
             /// @return
-            std::vector<KEY_TYPE> range_query(const box_t<Dim> &box)
+            std::vector<KEY_TYPE> range_query(box_t<Dim> &box)
             {
                 std::cerr << "Error: range_query is not supported for ANNKDTree." << std::endl;
                 return {}; // 返回一个空的结果
             }
 
-            std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q, unsigned int k)
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, unsigned int k)
             {
                 return this->knn_query(q, k, 0.0);
             }
 
-            std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q,
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q,
                                             unsigned int k, double eps);
 
         private:
@@ -60,7 +60,7 @@ namespace bench
 
         // func impl
         template <class KEY_TYPE, size_t Dim>
-        void ANNKDTreeInterface<KEY_TYPE, Dim>::build(const std::vector<KEY_TYPE> &points)
+        void ANNKDTreeInterface<KEY_TYPE, Dim>::build(std::vector<KEY_TYPE> &points)
         {
             std::cout << "Construct ANNKDTree..." << std::endl;
             this->points_num = points.size();
@@ -96,7 +96,7 @@ namespace bench
 
         template <class KEY_TYPE, size_t Dim>
         std::vector<KEY_TYPE> ANNKDTreeInterface<KEY_TYPE, Dim>::
-            knn_query(const KEY_TYPE &q, unsigned int k, double eps)
+            knn_query(KEY_TYPE &q, unsigned int k, double eps)
         {
             std::vector<ANNidx> nn_idx;
             std::vector<ANNdist> nn_dist;
@@ -105,10 +105,7 @@ namespace bench
 
             auto start = std::chrono::steady_clock::now();
 
-            // 创建中间变量 tmp 进行深拷贝
-            KEY_TYPE tmp = q;
-            // 传入中间变量，因为const不允许类型转换
-            index->annkSearch(tmp.data(), k, &nn_idx[0], &nn_dist[0], eps);
+            index->annkSearch(q.data(), k, &nn_idx[0], &nn_dist[0], eps);
             auto end = std::chrono::steady_clock::now();
 
             this->knn_cnt++;

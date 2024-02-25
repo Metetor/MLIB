@@ -40,7 +40,7 @@ namespace bench
         };
 
         template <class KEY_TYPE>
-        void points_to_geos(const std::vector<KEY_TYPE> &points, GEOSGeometry &geos_points)
+        void points_to_geos(std::vector<KEY_TYPE> &points, GEOSGeometry &geos_points)
         {
             geos_points.geometry.reserve(points.size());
 
@@ -65,11 +65,11 @@ namespace bench
                 return index->size();
             }
 
-            void build(const std::vector<KEY_TYPE> &points);
+            void build(std::vector<KEY_TYPE> &points);
 
-            std::vector<KEY_TYPE> range_query(const box_t<Dim> &box);
+            std::vector<KEY_TYPE> range_query(box_t<Dim> &box);
             // knn not support
-            std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q, unsigned int k)
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, unsigned int k)
             {
                 std::cerr << "Error: knn_query is not supported for QDTree." << std::endl;
                 return {}; // 返回一个空的结果
@@ -82,7 +82,7 @@ namespace bench
 
         // func impl
         template <class KEY_TYPE, size_t Dim>
-        void QDTreeInterface<KEY_TYPE, Dim>::build(const std::vector<KEY_TYPE> &points)
+        void QDTreeInterface<KEY_TYPE, Dim>::build(std::vector<KEY_TYPE> &points)
         {
             std::cout << "Construct QDTree "
                       << "Dim=" << Dim << std::endl;
@@ -114,7 +114,7 @@ namespace bench
 
         template <class KEY_TYPE, size_t Dim>
         std::vector<KEY_TYPE> QDTreeInterface<KEY_TYPE, Dim>::
-            range_query(const box_t<Dim> &box)
+            range_query(box_t<Dim> &box)
         {
             // prepare the query geometry
             geos::geom::GeometryFactory::Ptr GF_ptr = geos::geom::GeometryFactory::create();

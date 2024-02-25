@@ -39,11 +39,11 @@ namespace bench
                 return Dim * (3 * sizeof(double) + sizeof(size_t)) + this->buckets.size() * sizeof(std::vector<KEY_TYPE>);
             }
 
-            void build(const std::vector<KEY_TYPE> &points);
+            void build(std::vector<KEY_TYPE> &points);
 
-            std::vector<KEY_TYPE> range_query(const box_t<Dim> &box);
+            std::vector<KEY_TYPE> range_query(box_t<Dim> &box);
 
-            std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q, unsigned int k)
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, unsigned int k)
             {
                 std::cerr << "Error: knn_query is not supported for Uniform_Grid Index." << std::endl;
                 return {}; // 返回一个空的结果
@@ -58,7 +58,7 @@ namespace bench
             std::array<size_t, Dim> dim_offset;
 
             // compute the index on d-th dimension of a given point
-            inline size_t get_dim_idx(const KEY_TYPE &p, const size_t &d)
+            inline size_t get_dim_idx(KEY_TYPE &p, const size_t &d)
             {
                 if (p[d] <= mins[d])
                 {
@@ -91,7 +91,7 @@ namespace bench
 
         // func impl
         template <class KEY_TYPE, size_t Dim, size_t K>
-        void UGInterface<KEY_TYPE, Dim, K>::build(const std::vector<KEY_TYPE> &points)
+        void UGInterface<KEY_TYPE, Dim, K>::build(std::vector<KEY_TYPE> &points)
         {
             std::cout << "Construct Uniform Grid K=" << K << std::endl;
             auto start = std::chrono::steady_clock::now();
@@ -116,7 +116,7 @@ namespace bench
 
         template <class KEY_TYPE, size_t Dim, size_t K>
         std::vector<KEY_TYPE> UGInterface<KEY_TYPE, Dim, K>::
-            range_query(const box_t<Dim> &box)
+            range_query(box_t<Dim> &box)
         {
             auto start = std::chrono::steady_clock::now();
 

@@ -14,9 +14,9 @@ public:
     //virtual size_t index_size() = 0;
     virtual size_t count() = 0;
 
-    virtual void build(const std::vector<KEY_TYPE> &points) = 0;
-    virtual std::vector<KEY_TYPE> range_query(const box_t<Dim> &box) = 0;
-    virtual std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q, uint k) = 0;
+    virtual void build(std::vector<KEY_TYPE> &points) = 0;
+    virtual std::vector<KEY_TYPE> range_query(box_t<Dim> &box) = 0;
+    virtual std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, uint k) = 0;
     //  to be added:insert,remove,update and son on
 
     inline size_t get_build_time() { return build_time; }

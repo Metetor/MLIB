@@ -38,7 +38,7 @@ IndexInterface<KEY_TYPE, Dim> *get_index(std::string index_type)
     }
     else if (index_type == "kdtree")
     {
-        // index = new bench::index::ANNKDTreeInterface<KEY_TYPE, Dim>;
+        index = new bench::index::ANNKDTreeInterface<KEY_TYPE, Dim>;
     }
     else if (index_type == "ann")
     {
@@ -62,7 +62,23 @@ IndexInterface<KEY_TYPE, Dim> *get_index(std::string index_type)
     }
     else if (index_type == "zm")
     {
-        // index=new bench::index::FSInterface<KEY_TYPE,DIM,INDEX_ERROR_THRESHOLD>;
+        index=new bench::index::ZMIndexInterface<KEY_TYPE,Dim,INDEX_ERROR_THRESHOLD>;
+    }
+    else if (index_type =="mli")
+    {
+        index=new bench::index::MLIndexInterface<KEY_TYPE,Dim,INDEX_ERROR_THRESHOLD>;
+    }
+    else if(index_type=="ifi")
+    {
+        index=new bench::index::IFIndexInterface<KEY_TYPE,Dim>;
+    }
+    else if(index_type=="flood")
+    {
+        index=new bench::index::FloodInterface<KEY_TYPE,Dim, PARTITION_NUM, INDEX_ERROR_THRESHOLD>;
+    }
+    else if(index_type=="lisa")
+    {
+        index=new bench::index::LISA2Interface<KEY_TYPE,Dim,PARTITION_NUM, INDEX_ERROR_THRESHOLD>;
     }
     else
     {
@@ -168,7 +184,10 @@ void IndexManager<KEY_TYPE, Dim>::handle_queries(IndexInf_t *&idxInf)
 template <class KEY_TYPE, size_t Dim>
 void IndexManager<KEY_TYPE, Dim>::run()
 {
+    std::cout<<"enter run\n";
     IndexInf_t *idxInf;
     this->build_index(idxInf);
+    std::cout<<"build end\n";
     this->handle_queries(idxInf);
+    std::cout<<"query end\n";
 }

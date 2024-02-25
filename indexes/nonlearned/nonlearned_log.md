@@ -41,4 +41,4 @@
 
 - equal_depth_grid.hpp:
   - [class EDGInterface]
-    
+    [S]

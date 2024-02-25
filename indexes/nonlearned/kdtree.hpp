@@ -18,15 +18,10 @@ namespace bench
 {
     namespace index
     {
-
         // kdtree adapter using nanoflann
-        template <size_t Dim, size_t MaxSplit = 32>
-        class KDTree : public BaseIndex
+        template <class KEY_TYPE, size_t Dim, size_t MaxSplit = 32>
+        class KDTreeInterface : public IndexInterface<KEY_TYPE, Dim>
         {
-
-            using Point = point_t<Dim>;
-            using Box = box_t<Dim>;
-            using Points = std::vector<point_t<Dim>>;
 
             // ===== This example shows how to use nanoflann with these types of containers:
             // using my_vector_of_vectors_t = std::vector<std::vector<double> > ;
@@ -131,75 +126,80 @@ namespace bench
                 /** @} */
 
             }; // end of KDTreeVectorOfVectorsAdaptor
-
-            // customized kdtree type
-            using kdtree_t = KDTreeVectorOfVectorsAdaptor<Points, double, Dim>;
-
         public:
-            KDTree(Points &points)
-            {
-                std::cout << "Construct kd-tree MaxSplit=" << MaxSplit << std::endl;
-
-                auto start = std::chrono::steady_clock::now();
-
-#ifdef HEAP_PROFILE
-                HeapProfilerStart("kdtree");
-#endif
-
-                kdtree = new kdtree_t(Dim, points, MaxSplit);
-                kdtree->index->buildIndex();
-
-#ifdef HEAP_PROFILE
-                HeapProfilerDump("final");
-                HeapProfilerStop();
-#endif
-
-                auto end = std::chrono::steady_clock::now();
-                build_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-                std::cout << "Build Time: " << get_build_time() << " [ms]" << std::endl;
-            }
-
-            ~KDTree()
-            {
-                delete kdtree;
-            }
-
-            Points knn_query(Point &q, unsigned int k)
-            {
-                const size_t num_of_results = k;
-                std::vector<size_t> ret_indexes(k);
-                std::vector<double> out_dist_sqr(k);
-
-                auto start = std::chrono::steady_clock::now();
-                kdtree->query(&q[0], num_of_results, &ret_indexes[0], &out_dist_sqr[0]);
-                auto end = std::chrono::steady_clock::now();
-                knn_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-                knn_count++;
-
-                // final result
-                Points result;
-                result.reserve(num_of_results);
-                for (auto idx : ret_indexes)
-                {
-                    result.emplace_back(kdtree->m_data[idx]);
-                }
-
-                return result;
-            }
+            KDTreeInterface() : kdtree(nullptr) {}
+            ~KDTreeInterface() { delete kdtree; }
 
             inline size_t count()
             {
                 return kdtree->kdtree_get_point_count();
             }
+            // customized kdtree type
+            using kdtree_t = KDTreeVectorOfVectorsAdaptor<std::vector<KEY_TYPE>, double, Dim>;
+
+            void build(std::vector<KEY_TYPE> &points);
+
+            std::vector<KEY_TYPE> range_query(box_t<Dim> &box)
+            {
+                std::cerr << "Error:range_query is not supported for kdtree Index." << std::endl;
+                return {}; // 返回一个空的结果
+            }
+
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, uint k);
 
         private:
             // internal kdtree using nanoflann
             kdtree_t *kdtree;
         };
 
-        template <class KEY_TYPE, size_t Dim, size_t MaxSplit = 32>
-        class KDTreeInterface : public IndexInterface<KEY_TYPE, Dim>
+        template <class KEY_TYPE, size_t Dim, size_t MaxSplit>
+        void KDTreeInterface<KEY_TYPE, Dim, MaxSplit>::
+            build(std::vector<KEY_TYPE> &points)
         {
-        };
+            std::cout << "Construct kd-tree MaxSplit=" << MaxSplit << std::endl;
+
+            auto start = std::chrono::steady_clock::now();
+
+#ifdef HEAP_PROFILE
+            HeapProfilerStart("kdtree");
+#endif
+
+            kdtree = new kdtree_t(Dim, points, MaxSplit);
+            kdtree->index->buildIndex();
+
+#ifdef HEAP_PROFILE
+            HeapProfilerDump("final");
+            HeapProfilerStop();
+#endif
+
+            auto end = std::chrono::steady_clock::now();
+            this->build_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            std::cout << "Build Time: " << this->get_build_time() << " [ms]" << std::endl;
+        }
+
+        template <class KEY_TYPE, size_t Dim, size_t MaxSplit>
+        std::vector<KEY_TYPE> KDTreeInterface<KEY_TYPE, Dim, MaxSplit>::
+            knn_query(KEY_TYPE &q, uint k)
+        {
+            const size_t num_of_results = k;
+            std::vector<size_t> ret_indexes(k);
+            std::vector<double> out_dist_sqr(k);
+
+            auto start = std::chrono::steady_clock::now();
+            kdtree->query(&q[0], num_of_results, &ret_indexes[0], &out_dist_sqr[0]);
+            auto end = std::chrono::steady_clock::now();
+            this->knn_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            this->knn_cnt++;
+
+            // final result
+            std::vector<KEY_TYPE> result;
+            result.reserve(num_of_results);
+            for (auto idx : ret_indexes)
+            {
+                result.emplace_back(kdtree->m_data[idx]);
+            }
+
+            return result;
+        }
     }
 }

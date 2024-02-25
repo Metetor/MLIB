@@ -21,24 +21,17 @@ namespace bench
 {
     namespace index
     {
-
-        // the sort dimension is always the last dimension
-        template <size_t Dim, size_t K, size_t Eps = 64, size_t SortDim = Dim - 1>
-        class Flood : public BaseIndex
+        // the sort dim is always the last dimension
+        template <class KEY_TYPE, size_t Dim, size_t K, size_t Eps = 64, size_t SortDim = Dim - 1>
+        class FloodInterface : public IndexInterface<KEY_TYPE, Dim>
         {
-
-            using Point = point_t<Dim>;
-            using Points = std::vector<Point>;
-            using Range = std::pair<size_t, size_t>;
-            using Box = box_t<Dim>;
-
             using Index = pgm::PGMIndex<double, Eps>;
 
         public:
             class Bucket
             {
             public:
-                Points _local_points;
+                std::vector<KEY_TYPE> _local_points;
                 // eps for each bucket is fixed to 16 based on a micro benchmark
                 pgm::PGMIndex<double, 16> *_local_pgm;
 
@@ -49,7 +42,7 @@ namespace bench
                     delete this->_local_pgm;
                 }
 
-                inline void insert(Point &p)
+                inline void insert(KEY_TYPE &p)
                 {
                     this->_local_points.emplace_back(p);
                 }
@@ -71,7 +64,7 @@ namespace bench
                     _local_pgm = new pgm::PGMIndex<double, 16>(idx_data);
                 }
 
-                inline void search(Points &result, Box &box)
+                inline void search(std::vector<KEY_TYPE> &result, box_t<Dim> &box)
                 {
                     if (_local_pgm == nullptr)
                     {
@@ -93,87 +86,8 @@ namespace bench
                 }
             };
 
-            Flood(Points &points) : _data(points), bucket_size((points.size() + K - 1) / K)
-            {
-                std::cout << "Construct Flood "
-                          << "K=" << K << " Epsilon=" << Eps << " SortDim=" << SortDim << std::endl;
-
-                auto start = std::chrono::steady_clock::now();
-
-                // dimension offsets when computing bucket ID
-                for (size_t i = 0; i < Dim - 1; ++i)
-                {
-                    this->dim_offset[i] = bench::common::ipow(K, i);
-                }
-
-                // sort points by SortDim
-                std::sort(_data.begin(), _data.end(), [](auto &p1, auto &p2)
-                          { return std::get<SortDim>(p1) < std::get<SortDim>(p2); });
-
-                // boundaries of each dimension
-                std::fill(mins.begin(), mins.end(), std::numeric_limits<double>::max());
-                std::fill(maxs.begin(), maxs.end(), std::numeric_limits<double>::min());
-
-                // train model on dimension 1 -- Dim-1
-                std::vector<double> idx_data;
-                idx_data.reserve(points.size());
-                for (size_t i = 0; i < Dim - 1; ++i)
-                {
-                    for (const auto &p : _data)
-                    {
-                        mins[i] = std::min(p[i], mins[i]);
-                        maxs[i] = std::max(p[i], maxs[i]);
-
-                        idx_data.emplace_back(p[i]);
-                    }
-
-                    std::sort(idx_data.begin(), idx_data.end());
-                    this->indexes[i] = new Index(idx_data);
-
-                    idx_data.clear();
-                }
-
-                // note data are sorted by SortDim
-                for (auto &p : _data)
-                {
-                    buckets[compute_id(p)].insert(p);
-                }
-
-                for (auto &b : buckets)
-                {
-                    b.build();
-                }
-
-                auto end = std::chrono::steady_clock::now();
-                build_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-                std::cout << "Build Time: " << get_build_time() << " [ms]" << std::endl;
-                std::cout << "Index Size: " << index_size() << " Bytes" << std::endl;
-            }
-
-            Points range_query(Box &box)
-            {
-                auto start = std::chrono::steady_clock::now();
-
-                // find all intersected cells
-                std::vector<std::pair<size_t, size_t>> ranges;
-                find_intersect_ranges(ranges, box);
-
-                // search each cell using local models
-                Points result;
-                for (auto &range : ranges)
-                {
-                    for (auto idx = range.first; idx <= range.second; ++idx)
-                    {
-                        this->buckets[idx].search(result, box);
-                    }
-                }
-
-                auto end = std::chrono::steady_clock::now();
-                range_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-                range_count++;
-
-                return result;
-            }
+            FloodInterface() {}
+            ~FloodInterface() {}
 
             inline size_t count()
             {
@@ -202,16 +116,17 @@ namespace bench
                 return cdf_size + b_size + count() * sizeof(size_t);
             }
 
-            ~Flood()
-            {
-                for (size_t i = 0; i < Dim - 1; ++i)
-                {
-                    delete this->indexes[i];
-                }
-            }
+            void build(std::vector<KEY_TYPE> &points);
 
+            std::vector<KEY_TYPE> range_query(box_t<Dim> &box);
+
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, unsigned int k)
+            {
+                std::cerr << "Error: knn_query is not supported for Flood Index." << std::endl;
+                return {}; // 返回一个空的结果
+            }
         private:
-            Points &_data;
+            std::vector<KEY_TYPE> _data;
             std::array<Index *, Dim - 1> indexes;
             std::array<Bucket, bench::common::ipow(K, Dim - 1)> buckets;
             std::array<size_t, Dim - 1> dim_offset;
@@ -219,9 +134,9 @@ namespace bench
             std::array<double, Dim - 1> mins;
             std::array<double, Dim - 1> maxs;
 
-            const size_t bucket_size;
+            size_t bucket_size;
 
-            inline void find_intersect_ranges(std::vector<std::pair<size_t, size_t>> &ranges, Box &qbox)
+            inline void find_intersect_ranges(std::vector<std::pair<size_t, size_t>> &ranges, box_t<Dim> &qbox)
             {
                 if (Dim == 2)
                 {
@@ -254,7 +169,7 @@ namespace bench
             }
 
             // locate the bucket on d-th dimension using binary search
-            inline size_t get_dim_idx(Point &p, size_t d)
+            inline size_t get_dim_idx(KEY_TYPE &p, size_t d)
             {
                 if (p[d] <= this->mins[d])
                 {
@@ -268,7 +183,7 @@ namespace bench
                 return std::min(approx_pos, K - 1);
             }
 
-            inline size_t compute_id(Point &p)
+            inline size_t compute_id(KEY_TYPE &p)
             {
                 size_t id = 0;
 
@@ -281,5 +196,94 @@ namespace bench
                 return id;
             }
         };
+        // implenmentation
+        template <class KEY_TYPE, size_t Dim, size_t K, size_t Eps, size_t SortDim>
+        void FloodInterface<KEY_TYPE, Dim, K, Eps, SortDim>::
+            build(std::vector<KEY_TYPE> &points)
+        {
+            this->_data = points;
+            this->bucket_size = (points.size() + K - 1) / K;
+
+            std::cout << "Construct Flood "
+                      << "K=" << K << " Epsilon=" << Eps << " SortDim=" << SortDim << std::endl;
+
+            auto start = std::chrono::steady_clock::now();
+
+            // dimension offsets when computing bucket ID
+            for (size_t i = 0; i < Dim - 1; ++i)
+            {
+                this->dim_offset[i] = bench::common::ipow(K, i);
+            }
+
+            // sort points by SortDim
+            std::sort(_data.begin(), _data.end(), [](auto &p1, auto &p2)
+                      { return std::get<SortDim>(p1) < std::get<SortDim>(p2); });
+
+            // boundaries of each dimension
+            std::fill(mins.begin(), mins.end(), std::numeric_limits<double>::max());
+            std::fill(maxs.begin(), maxs.end(), std::numeric_limits<double>::min());
+
+            // train model on dimension 1 -- Dim-1
+            std::vector<double> idx_data;
+            idx_data.reserve(points.size());
+            for (size_t i = 0; i < Dim - 1; ++i)
+            {
+                for (const auto &p : _data)
+                {
+                    mins[i] = std::min(p[i], mins[i]);
+                    maxs[i] = std::max(p[i], maxs[i]);
+
+                    idx_data.emplace_back(p[i]);
+                }
+
+                std::sort(idx_data.begin(), idx_data.end());
+                this->indexes[i] = new Index(idx_data);
+
+                idx_data.clear();
+            }
+
+            // note data are sorted by SortDim
+            for (auto &p : _data)
+            {
+                buckets[compute_id(p)].insert(p);
+            }
+
+            for (auto &b : buckets)
+            {
+                b.build();
+            }
+
+            auto end = std::chrono::steady_clock::now();
+            this->build_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            std::cout << "Build Time: " << this->get_build_time() << " [ms]" << std::endl;
+            std::cout << "Index Size: " << this->index_size() << " Bytes" << std::endl;
+        }
+
+        template <class KEY_TYPE, size_t Dim, size_t LeafNodeCap, size_t MaxElements, size_t sort_dim>
+        std::vector<KEY_TYPE> FloodInterface<KEY_TYPE, Dim, LeafNodeCap, MaxElements, sort_dim>::
+            range_query(box_t<Dim> &box)
+        {
+            auto start = std::chrono::steady_clock::now();
+
+            // find all intersected cells
+            std::vector<std::pair<size_t, size_t>> ranges;
+            find_intersect_ranges(ranges, box);
+
+            // search each cell using local models
+            std::vector<KEY_TYPE> result;
+            for (auto &range : ranges)
+            {
+                for (auto idx = range.first; idx <= range.second; ++idx)
+                {
+                    this->buckets[idx].search(result, box);
+                }
+            }
+
+            auto end = std::chrono::steady_clock::now();
+            this->range_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            this->range_cnt++;
+
+            return result;
+        }
     }
 }

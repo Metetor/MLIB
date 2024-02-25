@@ -36,9 +36,9 @@ namespace bench
                 return Dim * K * sizeof(double) + Dim * sizeof(size_t) + buckets.size() * sizeof(std::vector<KEY_TYPE>);
             }
 
-            void build(const std::vector<KEY_TYPE> &points);
-            std::vector<KEY_TYPE> range_query(const box_t<Dim> &box);
-            std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q, unsigned int k)
+            void build(std::vector<KEY_TYPE> &points);
+            std::vector<KEY_TYPE> range_query(box_t<Dim> &box);
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, unsigned int k)
             {
                 std::cerr << "Error: knn_query is not supported for Equal_Depth_Grid Index." << std::endl;
                 return {}; // 返回一个空的结果
@@ -63,7 +63,7 @@ namespace bench
             Partitions partitions; // bucket boundaries on each dimension
 
             // locate the bucket on d-th dimension using binary search
-            inline size_t get_dim_idx(const KEY_TYPE &p, size_t d)
+            inline size_t get_dim_idx(KEY_TYPE &p, size_t d)
             {
                 if (p[d] <= partitions[d][0])
                 {
@@ -76,7 +76,7 @@ namespace bench
                 }
             }
 
-            inline size_t compute_id(const KEY_TYPE &p)
+            inline size_t compute_id(KEY_TYPE &p)
             {
                 size_t id = 0;
 
@@ -91,7 +91,7 @@ namespace bench
         };
 
         template <class KEY_TYPE, size_t Dim, size_t K>
-        void EDGInterface<KEY_TYPE, Dim, K>::build(const std::vector<KEY_TYPE> &points)
+        void EDGInterface<KEY_TYPE, Dim, K>::build(std::vector<KEY_TYPE> &points)
         {
             std::cout << "Construct Euqal-Depth Grid K=" << K << std::endl;
             auto start = std::chrono::steady_clock::now();
@@ -136,7 +136,7 @@ namespace bench
 
         template <class KEY_TYPE, size_t Dim, size_t K>
         std::vector<KEY_TYPE> EDGInterface<KEY_TYPE, Dim, K>::
-            range_query(const box_t<Dim> &box)
+            range_query(box_t<Dim> &box)
         {
             auto start = std::chrono::steady_clock::now();
             // bucket ranges that intersect the query box
