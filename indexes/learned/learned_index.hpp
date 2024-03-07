@@ -5,3 +5,4 @@
 #include "mlindex.hpp"
 #include "zmindex.hpp"
 #include "ifindex.hpp"
+#include "rsmi.hpp"

@@ -27,6 +27,17 @@ namespace bench
 
         constexpr size_t ipow(size_t base, int exp, size_t result = 1)
         {
+            /*
+            * if (exp<1)
+            {
+                return result;
+            }
+            else
+            {
+                result*=exp%2?base:1;
+                ipow(base*base,exp/2,result);
+            }
+            */
             return exp < 1 ? result : ipow(base * base, exp / 2, (exp % 2) ? result * base : result);
         }
 

@@ -1,5 +1,5 @@
 project(librsmi)
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.5)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(TORCH_PATH "/home/metetor/libtorch/")
+set(TORCH_PATH "/home/metetor/libtorch/share/cmake/Torch")
 list(APPEND CMAKE_PREFIX_PATH TORCH_PATH)
 find_package(Torch REQUIRED PATHS ${TORCH_PATH} CONFIG)
 

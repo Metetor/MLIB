@@ -10,13 +10,15 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
+#ifndef BENCH_DIM
 #define BENCH_DIM 2
+#endif
 
 using Point = point_t<BENCH_DIM>;
 using Box = box_t<BENCH_DIM>;
 using Points = std::vector<point_t<BENCH_DIM>>;
 
-const std::string MODEL_PATH = "/mnt/hgfs/MLIB/model_path/";
+const std::string MODEL_PATH = "/mnt/hgfs/MLIB/model/";
 
 // extract filename from a path
 std::string get_filename(const std::string &path)
@@ -24,9 +26,10 @@ std::string get_filename(const std::string &path)
     auto idx = path.find_last_of('/') + 1;
     return path.substr(idx);
 }
-
+//
 int main(int argc, char **argv)
 {
+    typedef IndexInterface<point_t<BENCH_DIM>, BENCH_DIM> IndexInf_t;
     assert(argc >= 4);
 
     std::string index = argv[1];   // index name
@@ -44,6 +47,7 @@ int main(int argc, char **argv)
     std::string model_path = MODEL_PATH + pure_fname;
     model_path.push_back('/');
 
+    std::cout<<model_path;
     if (!boost::filesystem::is_directory(model_path))
     {
         boost::filesystem::create_directory(model_path);
@@ -58,8 +62,10 @@ int main(int argc, char **argv)
 #endif
 
 #ifndef HEAP_PROFILE
-    bench::index::RSMIWrapper<BENCH_DIM> rsmi(points, model_path);
+    IndexInf_t *rsmi=new bench::index::RSMIInterface<point_t<BENCH_DIM>, BENCH_DIM>(model_path);
 
+
+    rsmi->build(points);
     if (mode.compare("range") == 0)
     {
         auto range_queries = bench::query::sample_range_queries(points);
@@ -84,4 +90,5 @@ int main(int argc, char **argv)
         return 0;
     }
 #endif
+    return 0;
 }

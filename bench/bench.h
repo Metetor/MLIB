@@ -58,7 +58,7 @@ IndexInterface<KEY_TYPE, Dim> *get_index(std::string index_type)
     }
     else if (index_type == "fs")
     {
-        // index=new bench::index::FSInterface<KEY_TYPE,Dim>;
+        index=new bench::index::FSInterface<KEY_TYPE,Dim>;
     }
     else if (index_type == "zm")
     {
@@ -80,6 +80,10 @@ IndexInterface<KEY_TYPE, Dim> *get_index(std::string index_type)
     {
         index=new bench::index::LISA2Interface<KEY_TYPE,Dim,PARTITION_NUM, INDEX_ERROR_THRESHOLD>;
     }
+    // else if(index_type="rsmi")
+    // {
+    //     index=new bench::index::RSMIInterface<KEY_TYPE,Dim>;
+    // }
     else
     {
         std::cout << "Could not find a matching index called " << index_type << ".\n";
@@ -184,10 +188,10 @@ void IndexManager<KEY_TYPE, Dim>::handle_queries(IndexInf_t *&idxInf)
 template <class KEY_TYPE, size_t Dim>
 void IndexManager<KEY_TYPE, Dim>::run()
 {
-    std::cout<<"enter run\n";
+
     IndexInf_t *idxInf;
     this->build_index(idxInf);
-    std::cout<<"build end\n";
+
     this->handle_queries(idxInf);
-    std::cout<<"query end\n";
+
 }

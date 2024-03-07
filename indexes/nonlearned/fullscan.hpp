@@ -91,101 +91,101 @@ namespace bench
                 }
         };
 
-    //     template <class KEY_TYPE, size_t Dim>
-    //     class FSInterface : public IndexInterface<KEY_TYPE, Dim>
-    //     {
-    //     public:
-    //         FSInterface() {}
-    //         ~FSInterface() {}
+        template <class KEY_TYPE, size_t Dim>
+        class FSInterface : public IndexInterface<KEY_TYPE, Dim>
+        {
+        public:
+            FSInterface() {}
+            ~FSInterface() {}
 
-    //         inline size_t count()
-    //         {
-    //             return this->_data.size();
-    //         }
+            inline size_t count()
+            {
+                return this->_data.size();
+            }
 
-    //         void build(const std::vector<KEY_TYPE> &points)
-    //         {
-    //             this->_data = points;
-    //         }
+            void build(std::vector<KEY_TYPE> &points)
+            {
+                this->_data = points;
+            }
 
-    //         std::vector<KEY_TYPE> range_query(const box_t<Dim> &box);
-    //         std::vector<KEY_TYPE> knn_query(const KEY_TYPE &q, unsigned int k);
+            std::vector<KEY_TYPE> range_query(box_t<Dim> &box);
+            std::vector<KEY_TYPE> knn_query(KEY_TYPE &q, uint k);
 
-    //     private:
-    //         std::vector<KEY_TYPE> _data;
-    //     };
+        private:
+            std::vector<KEY_TYPE> _data;
+        };
 
-    //     // func impl
-    //     template <class KEY_TYPE, size_t Dim>
-    //     std::vector<KEY_TYPE> FSInterface<KEY_TYPE, Dim>::
-    //         range_query(const box_t<Dim> &box)
-    //     {
-    //         auto start = std::chrono::steady_clock::now();
+        // func impl
+        template <class KEY_TYPE, size_t Dim>
+        std::vector<KEY_TYPE> FSInterface<KEY_TYPE, Dim>::
+            range_query(box_t<Dim> &box)
+        {
+            auto start = std::chrono::steady_clock::now();
 
-    //         std::vector<KEY_TYPE> result;
-    //         for (auto p : this->_data)
-    //         {
-    //             if (bench::common::is_in_box(p, box))
-    //             {
-    //                 result.emplace_back(p);
-    //             }
-    //         }
+            std::vector<KEY_TYPE> result;
+            for (auto p : this->_data)
+            {
+                if (bench::common::is_in_box(p, box))
+                {
+                    result.emplace_back(p);
+                }
+            }
 
-    //         auto end = std::chrono::steady_clock::now();
+            auto end = std::chrono::steady_clock::now();
 
-    //         this->range_cnt++;
-    //         this->range_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            this->range_cnt++;
+            this->range_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
-    //         return result;
-    //     }
+            return result;
+        }
 
-    //     template <class KEY_TYPE, size_t Dim>
-    //     std::vector<KEY_TYPE> FSInterface<KEY_TYPE, Dim>::
-    //         knn_query(const KEY_TYPE &q, unsigned int k)
-    //     {
-    //         using QueueElement = std::pair<KEY_TYPE, double>;
-    //         // 定义cmp函数
-    //         auto cmp = [&q](QueueElement &e1, QueueElement &e2)
-    //         {
-    //             return bench::common::eu_dist_square(e1.first, q) < e2.second;
-    //         };
+        template <class KEY_TYPE, size_t Dim>
+        std::vector<KEY_TYPE> FSInterface<KEY_TYPE, Dim>::
+            knn_query(KEY_TYPE &q, uint k)
+        {
+            using QueueElement = std::pair<KEY_TYPE, double>;
+            // 定义cmp函数
+            auto cmp = [&q](QueueElement &e1, QueueElement &e2)
+            {
+                return bench::common::eu_dist_square(e1.first, q) < e2.second;
+            };
 
-    //         std::priority_queue<QueueElement, std::vector<QueueElement>, decltype(cmp)> queue(cmp);
+            std::priority_queue<QueueElement, std::vector<QueueElement>, decltype(cmp)> queue(cmp);
 
-    //         auto start = std::chrono::steady_clock::now();
+            auto start = std::chrono::steady_clock::now();
 
-    //         for (auto p : _data)
-    //         {
-    //             if (queue.size() < k)
-    //             {
-    //                 queue.push(std::make_pair(p, bench::common::eu_dist_square(p, q)));
-    //             }
-    //             else
-    //             {
-    //                 QueueElement const &top_element = queue.top();
-    //                 double new_dist = bench::common::eu_dist_square(p, q);
-    //                 if (new_dist < top_element.second)
-    //                 {
-    //                     queue.pop();
-    //                     queue.push(std::make_pair(p, new_dist));
-    //                 }
-    //             }
-    //         }
+            for (auto p : _data)
+            {
+                if (queue.size() < k)
+                {
+                    queue.push(std::make_pair(p, bench::common::eu_dist_square(p, q)));
+                }
+                else
+                {
+                    QueueElement const &top_element = queue.top();
+                    double new_dist = bench::common::eu_dist_square(p, q);
+                    if (new_dist < top_element.second)
+                    {
+                        queue.pop();
+                        queue.push(std::make_pair(p, new_dist));
+                    }
+                }
+            }
 
-    //         auto end = std::chrono::steady_clock::now();
-    //         this->knn_cnt++;
-    //         this->knn_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+            auto end = std::chrono::steady_clock::now();
+            this->knn_cnt++;
+            this->knn_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
-    //         std::vector<KEY_TYPE> result;
-    //         result.reserve(k);
-    //         while (!queue.empty())
-    //         {
-    //             QueueElement const &top_element = queue.top();
-    //             result.emplace_back(top_element.first);
-    //             queue.pop();
-    //         }
+            std::vector<KEY_TYPE> result;
+            result.reserve(k);
+            while (!queue.empty())
+            {
+                QueueElement const &top_element = queue.top();
+                result.emplace_back(top_element.first);
+                queue.pop();
+            }
 
-    //         return result;
-    //     }
+            return result;
+        }
     }
 }

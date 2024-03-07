@@ -11,6 +11,7 @@ mkdir ${RESULT_PATH}
 
 MILLION=1000000
 
+
 for dist in "uniform" "gaussian" "lognormal"
 do
     for n in 1 10 50 100
@@ -22,7 +23,7 @@ do
             "${BENCH_BIN_PATH}bench2d_${n}m_default" ${index} "${SYN_DATA_PATH}${dist}_${n}m_2_1" $real_n all > "${RESULT_PATH}${index}_${dist}_${n}m"
         done
 
-        for index in "kdtree" "ann" 
+        for index in "kdtree" "ann"
         do
             echo "Benchmark ${index} dataset ${SYN_DATA_PATH}${dist}_${n}m_2_1"
             real_n=$[$n * $MILLION]

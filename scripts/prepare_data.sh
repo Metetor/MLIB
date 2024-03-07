@@ -69,3 +69,7 @@ do
     $BENCH_BIN -t gen_data -f $fname --dist $dist -n $real_n -d $DEFAULT_D -s $DEFAULT_S
     mv $fname "${SYN_DATA_PATH}Default"
 done
+
+
+prefix="https://xxxx/"
+

@@ -83,7 +83,7 @@ namespace bench
             template <typename Array, std::size_t... I>
             inline auto a2t_impl(const Array &a, std::index_sequence<I...>)
             {
-                return std::make_tuple(to_id(a[I], I)...);
+                return std::make_tuple(to_id(a[I], I)...); 
             }
 
             template <typename T, std::size_t N, typename Indices = std::make_index_sequence<N>>

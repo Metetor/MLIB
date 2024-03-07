@@ -25,11 +25,10 @@ using Box = box_t<BENCH_DIM>;
 
 int main(int argc, char **argv)
 {
-    std::cout<<"enter main\n";
+
     IndexManager<Point, BENCH_DIM> idx_m;
 
     idx_m.parse_args(argc, argv);
-    std::cout<<"parse_args end\n";
     idx_m.run();
 
     return 0;

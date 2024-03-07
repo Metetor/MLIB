@@ -11,16 +11,16 @@ DEFAULT_SYN_DATA_PATH="${DATA_PATH}synthetic/Default/"
 
 RESULT_PATH="../results/default/"
 
-#just for compile test and accuarcy verify
+# #just for compile test and accuarcy verify(range test)
 data="uniform_20m_2_1"
-index="rtree"
+index="fs"
 echo "Benchmark ${index} on dataset ${data}"
 ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 all > "${RESULT_PATH}${index}_${data}"
 #mkdir -p "${RESULT_PATH}"
 
 #run experiments on default synthetic datasets
-#for data in "uniform_20m_2_1" "gaussian_20m_2_1" "lognormal_20m_2_1"
-#do
+# for data in "uniform_20m_2_1" #"gaussian_20m_2_1" "lognormal_20m_2_1"
+# do
 #   for index in "rtree" "rstar" "zm" "mli" "lisa" "fs"
 #    do
 #        echo "Benchmark ${index} dataset ${data}"
@@ -38,7 +38,7 @@ ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 all > "${RE
 #        echo "Benchmark ${index} dataset ${data}"
 #       ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 range > "${RESULT_PATH}${index}_${data}"
 #    done
-#done
+# done
 
 #run experiments on nytaxi
 #data="nytaxi"

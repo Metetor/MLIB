@@ -53,11 +53,12 @@ RSMI::RSMI(int index, int level, int max_partition_num)
 
 void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
 {
-
+    // std::cout<<"Enter RSMI::build"<<std::endl;
     int page_size = Constants::PAGESIZE;
     auto start = chrono::high_resolution_clock::now();
     if (points.size() <= exp_recorder.N)
     {
+        //std::cout<<"Enter Branch1"<<std::endl;
         this->model_path += "_" + to_string(level) + "_" + to_string(index);
         if (exp_recorder.depth < level)
         {
@@ -130,7 +131,7 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
             locations.push_back(point.y);
             labels.push_back(point.index);
         }
-        
+
         std::ifstream fin(this->model_path);
         if (!fin)
         {
@@ -179,6 +180,7 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
     }
     else
     {
+        //std::cout<<"Enter Branch2"<<std::endl;
         is_last = false;
         N = (long long)points.size();
         int bit_num = max_partition_num;
@@ -192,7 +194,7 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
 
         vector<float> locations(N * 2);
         vector<float> labels(N);
-
+        //std::cout<<"For"<<std::endl;
         for (size_t i = 0; i < bit_num; i++)
         {
             long long bn_index = i * each_item_size;
@@ -250,8 +252,11 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
 
         int epoch = Constants::START_EPOCH;
         bool is_retrain = false;
+        //std::cout<<"do while"<<std::endl;
+        int counter=0;
         do
         {
+            //std::cout<<"debug:01"<<std::endl;
             net = std::make_shared<Net>(2);
             #ifdef use_gpu
                 net->to(torch::kCUDA);
@@ -261,7 +266,9 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
             std::ifstream fin(this->model_path);
             if (!fin)
             {
+                //std::cout<<"begin train"<<std::endl;
                 net->train_model(locations, labels);
+                //std::cout<<"end train"<<std::endl;
                 torch::save(net, this->model_path);
             }
             else
@@ -272,6 +279,7 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
 
             for (Point point : points)
             {
+                //std::cout<<"predict"<<endl;
                 int predicted_index = (int)(net->predict(point) * width);
 
                 predicted_index = predicted_index < 0 ? 0 : predicted_index;
@@ -282,6 +290,7 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
             map<int, vector<Point>>::iterator iter1;
             iter1 = points_map.begin();
             int map_size = 0;
+            //std::cout<<"debug:02"<<std::endl;
             while (iter1 != points_map.end())
             {
                 if (iter1->second.size() > 0)
@@ -290,6 +299,7 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
                 }
                 iter1++;
             }
+            //std::cout<<"debug:03"<<std::endl;
             if (map_size < 2)
             {
                 int predicted_index = (int)(net->predict(points[0]) * width);
@@ -305,10 +315,10 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
             {
                 is_retrain = false;
             }
-
+            //std::cout<<"debug:04"<<std::endl;
         } while (is_retrain);
         auto finish = chrono::high_resolution_clock::now();
-        
+
         exp_recorder.non_leaf_node_num++;
 
         points.clear();
@@ -316,7 +326,7 @@ void RSMI::build(ExpRecorder &exp_recorder, vector<Point> points)
 
         map<int, vector<Point>>::iterator iter;
         iter = points_map.begin();
-
+        //std::cout<<"while"<<std::endl;
         while (iter != points_map.end())
         {
             if (iter->second.size() > 0)
