@@ -22,11 +22,17 @@ We compare **six** recent multi-dimensional learned indices:
 
 ## Compilation
 ### Step 1: Setup Dependencies
-- `boost 1.79`: https://www.boost.org/users/history/version_1_79_0.html 步骤1 ./bootstrap.sh --prefix=/usr/local 2 ./b2 3 ./b2 install
-- `TPIE`: https://github.com/thomasmoelhave/tpie(在主目录下编译安装)
+- `boost 1.79`: https://www.boost.org/users/history/version_1_79_0.html
+  - 步骤1 ./bootstrap.sh --prefix=/usr/local
+  - 2 ./b2
+  - 3 ./b2 install
+- `TPIE`: https://github.com/thomasmoelhave/tpie
+  - (在主目录下编译安装,或许直接通过tpie_linux.deb安装tpie.a更好)
+  -
 - `GEOS`: https://libgeos.org/
+  - 版本 3.10.5
 - `gperftools`: https://github.com/gperftools/gperftools
-- `libtorch`: https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.4.0%2Bcpu.zip
+- `libtorch`: https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.7.0%2Bcpu.zip (rsmi出现浮点数异常的问题可能是libtorch的版本问题)
 - `numpy` and `matplotlib` for result visualization
 
 ### Step 2: Build RSMI and ANN
@@ -103,16 +109,28 @@ bash prepare_data.sh
 [Failed,2.真实文件夹无法下载，疑似没有cookie文件]
 [Checkout,先将现在真实数据集代码注释掉，只生成合成数据集]
 [TODO]
-[Try,下载并使用python预处理nyc-tlc的2016-01-2016-06的数据集]
+[Try,下载并使用python预处理nyc-tlc的2016-01-2016-06的数据集][s]
+[Try,处理FS数据集]
+[Try,处理Tronto3D数据集]
+[Try,处理OSM数据集]
 [Failed,3.generate synthetic data failed]
 [Checkout,文件路径错误，CMakeLists.txt中生成执行文件路径错误，and prepare_data.sh中的BENCH_BIN路径错误]
 [S]
 ```
 
+now we have part of real dataset(nytaxi 201601-201606 1.03GB),and we test on it
+
 We prepare several scripts to run the experiments.
 
 Run experiments on default settings: `bash run_exp.sh`
 
+[error:Benchmark mli dataset lognormal_20m_2_1 error
+terminate called after throwing an instance of 'std::logic_error'
+  what():  Points must be increasing by x.
+]
+[
+    error:benchmark real dataset failed
+]
 Run experiments by varying N: `bash run_exp_n.sh`
 
 Run experiments by varying dim: `bash run_exp_dim.sh`
