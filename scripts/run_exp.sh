@@ -9,13 +9,15 @@ REAL_DATA_PATH="${DATA_PATH}real/"
 SYN_DATA_PATH="${DATA_PATH}synthetic/"
 DEFAULT_SYN_DATA_PATH="${DATA_PATH}synthetic/Default/"
 
-RESULT_PATH="../results/default/"
+RESULT_PATH="../results/real/"
 
-# #just for compile test and accuarcy verify(range test)
-data="uniform_20m_2_1"
-index="fs"
-echo "Benchmark ${index} on dataset ${data}"
-${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 all > "${RESULT_PATH}${index}_${data}"
+mkdir -p ${RESULT_PATH}
+#just for compile test and accuarcy verify(range test)
+# data="fs"
+# index="rtree"
+# echo "Benchmark ${index} on dataset ${data}"
+# echo "debug abnormal data of range query"
+# ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 0 range > "${RESULT_PATH}${index}_${data}_debug02"
 #mkdir -p "${RESULT_PATH}"
 
 #run experiments on default synthetic datasets
@@ -40,14 +42,14 @@ ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 all > "${RE
 #    done
 # done
 
-#run experiments on nytaxi
-#data="nytaxi"
-#for index in "rtree" "rstar" "zm" "mli" "lisa"
-#do
-#    echo "Benchmark ${index} dataset ${data}"
-#    #这里的size我没测，只是选个小一点的数
-#    ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 3680126 all > "${RESULT_PATH}${index}_${data}"
-#done
+# run experiments on nytaxi
+data="fs"
+for index in "mli" #"rstar" "zm" "mli" "lisa"
+do
+   echo "Benchmark ${index} dataset ${data}"
+   #这里的size我没测，只是选个小一点的数
+   ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 0 range > "${RESULT_PATH}${index}_${data}"
+done
 
 #for index in "kdtree" "ann"
 #do
@@ -61,24 +63,24 @@ ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 all > "${RE
 #    ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 3680126 range > "${RESULT_PATH}${index}_${data}"
 #done
 # run experiments on FourSquare
-#data="fs"
-#for index in "rtree" "rstar" "zm" "mli" "lisa"
-#do
+# data="fs"
+# for index in "rtree" "rstar" "zm" "mli" "lisa"
+# do
 #    echo "Benchmark ${index} dataset ${data}"
 #    ${BENCH2D_FS} ${index} "${REAL_DATA_PATH}$data" 3680126 all > "${RESULT_PATH}${index}_${data}"
-#done
+# done
 
-#for index in "kdtree" "ann"
-#do
+# for index in "kdtree" "ann"
+# do
 #    echo "Benchmark ${index} dataset ${data}"
 #    ${BENCH2D_FS} ${index} "${REAL_DATA_PATH}$data" 3680126 knn > "${RESULT_PATH}${index}_${data}"
-#done
+# done
 
-#for index in "qdtree" "ug" "edg" "fs" "ifi" "flood"
-#do
+# for index in "qdtree" "ug" "edg" "fs" "ifi" "flood"
+# do
 #    echo "Benchmark ${index} dataset ${data}"
 #    ${BENCH2D_FS} ${index} "${REAL_DATA_PATH}$data" 3680126 range > "${RESULT_PATH}${index}_${data}"
-#done
+# done
 
 # run experiments on OSM
 #data="osm-china"

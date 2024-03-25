@@ -207,17 +207,12 @@ namespace bench
                 radii[pid] = std::max(radii[pid], dist);
             }
 
-            // fill the offsets vector
+            // fill the offsets vector,follow the rule:offset[i]=r[0]+...+r[i-1]
             std::fill(this->offsets.begin(), this->offsets.end(), 0.0);
 
             for (size_t i = 1; i < p; ++i)
             {
-                offsets[i] = radii[i - 1];
-            }
-
-            for (size_t i = 1; i < p; ++i)
-            {
-                offsets[i] += offsets[i - 1];
+                offsets[i] = radii[i - 1]+offsets[i-1];
             }
 
             // construct learned index on projected values
@@ -239,14 +234,39 @@ namespace bench
                           return std::get<1>(p1) < std::get<1>(p2);
                       });
 
+
             for (auto &pp : point_with_projection)
             {
                 this->_data.emplace_back(std::get<0>(pp));
                 projections.emplace_back(std::get<1>(pp));
             }
 
-            this->_pgm = new pgm::PGMIndex<double, eps>(projections);
+            //add remove duplicate projection code
+            double tmp=0;
+            for(int i=0;i<projections.size()-1;i++)
+            {
+                if(projections[i]==projections[i+1])
+                {
+                    printf("%.10f\n",projections[i]);
+                    projections[i]=(projections[i]+tmp)/2;
+                    printf("%.10f\n",projections[i]);
+                }
+                tmp=projections[i];
+            }
+            //debug,检查是否是有重复值
+            std::vector<double>::iterator p_it;
+            p_it=unique(projections.begin(),projections.end());
+            if(p_it!=projections.end())
+            {
+                std::cout<<"存在重复值";
+                //projections.erase(p_it,projections.end());
+            }
 
+
+            //print log
+            std::cout<<"been sorted"<<std::endl;
+            this->_pgm = new pgm::PGMIndex<double, eps>(projections);
+            std::cout<<"pgm build success"<<std::endl;
             auto end = std::chrono::steady_clock::now();
             this->build_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 

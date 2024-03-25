@@ -325,13 +325,22 @@ namespace bench
                 projections.emplace_back(std::get<1>(pp));
             }
 
-            // make sure there is no duplicate keys
+            // make sure there is no duplicate keys,这里似乎并不能确保
             for (size_t i = 0; i < points.size() - 1; ++i)
             {
                 if (projections[i] == projections[i + 1])
                 {
                     projections[i + 1] = (projections[i] + projections[i + 2]) / 2.0;
                 }
+            }
+
+            //debug,检查是否是有重复值
+            std::vector<double>::iterator p_it;
+            p_it=unique(projections.begin(),projections.end());
+            if(p_it!=projections.end())
+            {
+                std::cout<<"存在重复值";
+                projections.erase(p_it,projections.end());
             }
 
             // train 1-D learned index on projections

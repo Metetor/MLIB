@@ -53,3 +53,4 @@
       - ：！！！！！！！！！！！！！！！！！！！!!!!!!!!!!!!!!!!!
       - 我去，竟然输出了relu end,应该是成功了啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊
       - 去除之前的checkpoint信息
+    - try to merge RSMI to other indices

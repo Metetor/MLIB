@@ -58,27 +58,27 @@ IndexInterface<KEY_TYPE, Dim> *get_index(std::string index_type)
     }
     else if (index_type == "fs")
     {
-        index=new bench::index::FSInterface<KEY_TYPE,Dim>;
+        index = new bench::index::FSInterface<KEY_TYPE, Dim>;
     }
     else if (index_type == "zm")
     {
-        index=new bench::index::ZMIndexInterface<KEY_TYPE,Dim,INDEX_ERROR_THRESHOLD>;
+        index = new bench::index::ZMIndexInterface<KEY_TYPE, Dim, INDEX_ERROR_THRESHOLD>;
     }
-    else if (index_type =="mli")
+    else if (index_type == "mli")
     {
-        index=new bench::index::MLIndexInterface<KEY_TYPE,Dim,INDEX_ERROR_THRESHOLD>;
+        index = new bench::index::MLIndexInterface<KEY_TYPE, Dim, INDEX_ERROR_THRESHOLD>;
     }
-    else if(index_type=="ifi")
+    else if (index_type == "ifi")
     {
-        index=new bench::index::IFIndexInterface<KEY_TYPE,Dim>;
+        index = new bench::index::IFIndexInterface<KEY_TYPE, Dim>;
     }
-    else if(index_type=="flood")
+    else if (index_type == "flood")
     {
-        index=new bench::index::FloodInterface<KEY_TYPE,Dim, PARTITION_NUM, INDEX_ERROR_THRESHOLD>;
+        index = new bench::index::FloodInterface<KEY_TYPE, Dim, PARTITION_NUM, INDEX_ERROR_THRESHOLD>;
     }
-    else if(index_type=="lisa")
+    else if (index_type == "lisa")
     {
-        index=new bench::index::LISA2Interface<KEY_TYPE,Dim,PARTITION_NUM, INDEX_ERROR_THRESHOLD>;
+        index = new bench::index::LISA2Interface<KEY_TYPE, Dim, PARTITION_NUM, INDEX_ERROR_THRESHOLD>;
     }
     // else if(index_type="rsmi")
     // {
@@ -139,7 +139,14 @@ template <class KEY_TYPE, size_t Dim>
 void IndexManager<KEY_TYPE, Dim>::build_index(IndexInf_t *&idxInf)
 {
     // read data to points
-    bench::utils::read_points(points, fpath, N);
+    if (this->N == 0)
+    {
+        this->N=bench::utils::read_points(points, fpath);
+    }
+    else
+    {
+        bench::utils::read_points(points, fpath, N);
+    }
     // get index
     idxInf = get_index<KEY_TYPE, Dim>(index_type);
     // build
@@ -193,5 +200,4 @@ void IndexManager<KEY_TYPE, Dim>::run()
     this->build_index(idxInf);
 
     this->handle_queries(idxInf);
-
 }

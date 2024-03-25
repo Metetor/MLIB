@@ -130,6 +130,32 @@ namespace bench
             tpie::tpie_finish();
         }
 
+        // rewrite read_points without param N and return N
+        template <size_t dim>
+        inline size_t read_points(points_t<dim> &out_points, const std::string &fname)
+        {
+
+            tpie::tpie_init();
+            tpie::file_stream<double> in;
+            in.open(fname);
+
+            size_t N = 0;
+            point_t<dim> tmp;
+            while (in.can_read())
+            {
+                for (size_t j = 0; j < dim; j++)
+                {
+                    tmp[j] = in.read();
+                }
+                out_points.emplace_back(tmp);
+                N++;
+            }
+            in.close();
+            tpie::tpie_finish();
+
+            return N;
+        }
+
         template <typename T, typename Iter, std::size_t... Is>
         constexpr auto to_array(Iter &iter, std::index_sequence<Is...>)
             -> std::array<T, sizeof...(Is)>

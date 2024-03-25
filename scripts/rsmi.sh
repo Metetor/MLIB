@@ -12,12 +12,12 @@ RESULT_PATH="../results/default/"
 
 #mkdir ${RESULT_PATH}
 
-for data in "uniform_1m_2_1" #"gaussian_20m_2_1" "lognormal_20m_2_1"
+for data in "uniform_20m_2_1" #"gaussian_20m_2_1" "lognormal_20m_2_1"
 do
     for index in "rsmi"
     do
         echo "Benchmark ${index} dataset ${data}"
-        ${BENCH_RSMI} ${index} "${SYN_DATA_PATH}$data" 1000000 all > "${RESULT_PATH}${index}_${data}"
+        ${BENCH_RSMI} ${index} "${SYN_DATA_PATH}$data" 20000000 all > "${RESULT_PATH}${index}_${data}"
     done
 done
 

@@ -196,19 +196,20 @@ namespace bench
                       << "LeafNodeCap=" << LeafNodeCap
                       << " MaxElements=" << MaxElements << " sort_dim=" << sort_dim << std::endl;
             _points = points;
+            std::cout<<"Check0";
             auto start = std::chrono::steady_clock::now();
-
+            std::cout<<"Check01";
             std::vector<std::pair<KEY_TYPE, size_t>> point_with_id;
+            std::cout<<"Check02";
             point_with_id.reserve(points.size());
+            std::cout<<"Check03";
             size_t cnt = 0;
             for (auto &p : points)
             {
                 point_with_id.emplace_back(p, (cnt++));
             }
-
             // run STR algorithm to bulk-load points
             pack_rtree_t temp_rt(point_with_id.begin(), point_with_id.end());
-
             // group leaf nodes
             std::vector<std::pair<box_t<Dim>, LeafNode>> idx_data;
             idx_data.reserve((points.size() / LeafNodeCap) + 1);
@@ -224,13 +225,11 @@ namespace bench
                     temp_ids.clear();
                 }
             }
-
             if (temp_ids.size() != 0)
             {
                 idx_data.emplace_back(compute_mbr(temp_ids, points), LeafNode(temp_ids, points));
                 temp_ids.clear();
             }
-
             // build index rtree
             index = new index_rtree_t(idx_data.begin(), idx_data.end());
 

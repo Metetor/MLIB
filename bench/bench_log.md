@@ -7,3 +7,6 @@
     [@get_index实现，返回接口类对象]
     [实现@handle_queries，功能实现查询]
 [delete IndexSet、build_index]
+
+
+[merge bench_rsmi.cpp to bench.h]

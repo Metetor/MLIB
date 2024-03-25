@@ -237,6 +237,14 @@ namespace bench
                 }
 
                 std::sort(idx_data.begin(), idx_data.end());
+                            //debug,检查是否是有重复值
+                std::vector<double>::iterator p_it;
+                p_it=unique(idx_data.begin(),idx_data.end());
+                if(p_it!=idx_data.end())
+                {
+                    std::cout<<"存在重复值";
+                    idx_data.erase(p_it,idx_data.end());
+                }
                 this->indexes[i] = new Index(idx_data);
 
                 idx_data.clear();

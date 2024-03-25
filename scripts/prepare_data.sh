@@ -71,5 +71,4 @@ do
 done
 
 
-prefix="https://xxxx/"
 

@@ -14,7 +14,7 @@ namespace bench
     {
 
         // sample queries from data
-        // sample point queries
+      // sample point queries
         template <size_t dim>
         static std::vector<point_t<dim>> sample_point_queries(points_t<dim> &points, size_t s = 100)
         {
@@ -81,20 +81,22 @@ namespace bench
 
         // sample range queries
         // selectivity = range_count(q_box) / N
-        // for each selectivity we generate s=10 random boxes roughly match the selectivity
+        // for each selectivity we generate bx_num=10 random boxes roughly match the selectivity
         template <size_t dim>
-        static std::vector<std::pair<box_t<dim>, size_t>> sample_range_queries(points_t<dim> &points, size_t s = 10)
+        static std::vector<std::pair<box_t<dim>, size_t>> sample_range_queries(points_t<dim> &points, size_t bx_num= 10)
         {
-            double selectivities[5] = {0.001, 0.01, 0.05, 0.1, 0.2};
-            auto corner_points = sample_point_queries(points, s);
+            int sel_num=5;
+            double selectivities[sel_num] = {0.001,0.01,0.04,0.1,0.2};
+            auto corner_points = sample_point_queries(points, bx_num);
             bench::index::FullScan<dim> fs(points);
+            // FSI.build(points);
 
             std::pair<point_t<dim>, point_t<dim>> min_max = min_and_max(points);
 
             std::vector<std::pair<box_t<dim>, size_t>> range_queries;
-            range_queries.reserve(5 * s);
+            range_queries.reserve(sel_num * bx_num);
 
-            for (int i = 0; i < 5; ++i)
+            for (int i = 0; i < sel_num; ++i)
             {
                 for (auto &point : corner_points)
                 {

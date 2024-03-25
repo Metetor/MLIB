@@ -18,7 +18,7 @@ using Point = point_t<BENCH_DIM>;
 using Box = box_t<BENCH_DIM>;
 using Points = std::vector<point_t<BENCH_DIM>>;
 
-const std::string MODEL_PATH = "/mnt/hgfs/MLIB/model/";
+const std::string MODEL_PATH = "../model/";
 
 // extract filename from a path
 std::string get_filename(const std::string &path)

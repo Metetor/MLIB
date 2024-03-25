@@ -64,6 +64,7 @@ namespace bench
 
             this->build_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
+            std::cout<< "Points Count:"<<this->count()<<std::endl;
             std::cout << "Build Time: " << this->get_build_time() << " [ms]" << std::endl;
             std::cout << "Index Size: " << this->index_size() << " Bytes" << std::endl;
         }
