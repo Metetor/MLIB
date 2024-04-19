@@ -3,7 +3,6 @@
 #include "nanoflann.hpp"
 #include "../../utils/type.hpp"
 #include "../../utils/common.hpp"
-#include "../base_index.hpp"
 #include "../indexInterface.h"
 
 #include <cstddef>

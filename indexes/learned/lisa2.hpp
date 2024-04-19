@@ -6,7 +6,6 @@
 #include "../../utils/type.hpp"
 #include "../../utils/common.hpp"
 #include "../pgm/pgm_index.hpp"
-#include "../base_index.hpp"
 
 namespace bench
 {

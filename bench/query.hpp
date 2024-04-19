@@ -6,7 +6,7 @@
 #include <algorithm>
 
 #include "../utils/type.hpp"
-#include "../indexes/nonlearned/fullscan.hpp"
+#include "../indexes/nonlearned/rtree.hpp"
 
 namespace bench
 {
@@ -14,7 +14,7 @@ namespace bench
     {
 
         // sample queries from data
-      // sample point queries
+        // sample point queries
         template <size_t dim>
         static std::vector<point_t<dim>> sample_point_queries(points_t<dim> &points, size_t s = 100)
         {
@@ -83,13 +83,18 @@ namespace bench
         // selectivity = range_count(q_box) / N
         // for each selectivity we generate bx_num=10 random boxes roughly match the selectivity
         template <size_t dim>
-        static std::vector<std::pair<box_t<dim>, size_t>> sample_range_queries(points_t<dim> &points, size_t bx_num= 10)
+        static std::vector<std::pair<box_t<dim>, size_t>> sample_range_queries(points_t<dim> &points, size_t bx_num = 10)
         {
-            int sel_num=5;
-            double selectivities[sel_num] = {0.001,0.01,0.04,0.1,0.2};
+            int sel_num = 5;
+            double selectivities[sel_num] = {0.01, 0.05, 0.1, 0.2, 0.3};
             auto corner_points = sample_point_queries(points, bx_num);
-            bench::index::FullScan<dim> fs(points);
-            // FSI.build(points);
+            long long N = points.size();
+            // bench::index::FullScan<dim> fs(points);
+            //这里还是用rtree吧，更快
+            bench::index::RTreeInterface<point_t<dim>, dim> *rt=new bench::index::RTreeInterface<point_t<dim>, dim>();
+            // bench::index::FSInterface<point_t<dim>, dim> *FSI = new bench::index::FSInterface<point_t<dim>, dim>();
+            // FSI->build(points);
+            rt->build(points);
 
             std::pair<point_t<dim>, point_t<dim>> min_max = min_and_max(points);
 
@@ -98,19 +103,49 @@ namespace bench
 
             for (int i = 0; i < sel_num; ++i)
             {
-                for (auto &point : corner_points)
+                for (auto &cp : corner_points)
                 {
+                    // roughly gen another_corner
                     point_t<dim> another_corner;
                     for (size_t d = 0; d < dim; ++d)
                     {
-                        // this is a roughly estimation of selectivity by assuming
-                        // uniform distribution and dimension independence
+
+                        // // this is a roughly estimation of selectivity by assuming
+                        // // uniform distribution and dimension independence
                         double step = (min_max.second[d] - min_max.first[d]) * std::pow(selectivities[i], 1.0 / dim);
                         // make sure the generated box is within the data range
-                        another_corner[d] = std::min(point[d] + step, min_max.second[d]);
+                        another_corner[d] = std::min(cp[d] + step, min_max.second[d]);
                     }
-                    box_t<dim> box(point, another_corner);
-                    range_queries.emplace_back(box, fs.range_query(box).size());
+                    // 计算盒子中的数据点数量
+                    box_t<dim> tmp(cp, another_corner);
+                    int num_points_in_box = rt->range_query(tmp).size();
+                    double sel_in_box = static_cast<double>(num_points_in_box) / N;
+                    double error=(sel_in_box - selectivities[i])/selectivities[i];
+
+                    // int cnt=0;
+                    do
+                    {
+                        // 使用贪心修正一下边界
+                        for(int d=0;d<dim;d++){
+                            double range=another_corner[d]-cp[d];
+                            double mid=(another_corner[d]+cp[d])/2;
+                            double adjust=error*0.8;//alpha设置为0.2
+                            double new_range = std::min(min_max.second[d], range * (1-adjust));
+
+                            cp[d]=std::max(min_max.first[d], mid - new_range / 2);
+                            another_corner[d]=std::min(min_max.second[d], mid + new_range / 2);
+                        }
+                         //update sel_in_box
+                        box_t<dim> tmp(cp, another_corner);
+                        num_points_in_box = rt->range_query(tmp).size();
+                        sel_in_box = static_cast<double>(num_points_in_box) / N;
+
+                        error=(sel_in_box - selectivities[i])/selectivities[i];
+                        // if(cnt++%10==0)
+                        //     std::cout<<"epoch:"<<cnt<<";error:"<<error<<std::endl;
+                    } while (abs(error)>0.1);
+                    box_t<dim> box(cp, another_corner);
+                    range_queries.emplace_back(box, rt->range_query(box).size());
                 }
             }
 
@@ -179,9 +214,10 @@ namespace bench
                         avg += tt.second;
                     }
                     std::cout << "Sel=[" << sel_lo << ", " << sel_hi << "]"
-                              << " Avg. Time: " << avg / bucket_size << " [us]" << std::endl;
+                              << " Avg. Time: " << avg / bucket_size << " [ms]" << std::endl;
                     temp.clear();
-                    cnt = 0;
+                    temp.emplace_back(rt);
+                    cnt = 1;
                 }
                 else
                 {

@@ -4,7 +4,6 @@
 #include "../../utils/common.hpp"
 #include "../../utils/type.hpp"
 #include "../indexInterface.h"
-#include "../base_index.hpp"
 #include "../pgm/pgm_index.hpp"
 
 #include <cstddef>
@@ -247,20 +246,20 @@ namespace bench
             {
                 if(projections[i]==projections[i+1])
                 {
-                    printf("%.10f\n",projections[i]);
+                    // printf("%.10f\n",projections[i]);
                     projections[i]=(projections[i]+tmp)/2;
-                    printf("%.10f\n",projections[i]);
+                    // printf("%.10f\n",projections[i]);
                 }
                 tmp=projections[i];
             }
-            //debug,检查是否是有重复值
-            std::vector<double>::iterator p_it;
-            p_it=unique(projections.begin(),projections.end());
-            if(p_it!=projections.end())
-            {
-                std::cout<<"存在重复值";
-                //projections.erase(p_it,projections.end());
-            }
+            // //debug,检查是否是有重复值
+            // std::vector<double>::iterator p_it;
+            // p_it=unique(projections.begin(),projections.end());
+            // if(p_it!=projections.end())
+            // {
+            //     std::cout<<"存在重复值";
+            //     //projections.erase(p_it,projections.end());
+            // }
 
 
             //print log

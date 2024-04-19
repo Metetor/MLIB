@@ -93,8 +93,8 @@ public:
     }
 
     bool add_point(const X &x, const Y &y) {
-        if (points_in_hull > 0 && x <= last_x)
-            throw std::logic_error("Points must be increasing by x.");
+        // if (points_in_hull > 0 && x <= last_x)
+        //     throw std::logic_error("Points must be increasing by x.");
 
         last_x = x;
         auto max_y = std::numeric_limits<Y>::max();

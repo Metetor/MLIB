@@ -46,7 +46,7 @@ IndexInterface<KEY_TYPE, Dim> *get_index(std::string index_type)
     }
     else if (index_type == "qdtree")
     {
-        index = new bench::index::QDTreeInterface<KEY_TYPE, Dim>;
+        // index = new bench::index::QDTreeInterface<KEY_TYPE, Dim>;
     }
     else if (index_type == "ug")
     {
@@ -80,10 +80,10 @@ IndexInterface<KEY_TYPE, Dim> *get_index(std::string index_type)
     {
         index = new bench::index::LISA2Interface<KEY_TYPE, Dim, PARTITION_NUM, INDEX_ERROR_THRESHOLD>;
     }
-    // else if(index_type="rsmi")
-    // {
-    //     index=new bench::index::RSMIInterface<KEY_TYPE,Dim>;
-    // }
+    else if(index_type == "rsmi")
+    {
+        // index=new bench::index::RSMIInterface<KEY_TYPE,Dim>;
+    }
     else
     {
         std::cout << "Could not find a matching index called " << index_type << ".\n";
@@ -98,20 +98,37 @@ class IndexManager
 {
     typedef IndexInterface<KEY_TYPE, Dim> IndexInf_t;
 
-private:
-    // manage index
-    std::string index_type;
-    std::string fpath;
-    size_t N;
-    std::string mode; // query mode:{range,knn,all}
-    Points points;
-
 public:
     IndexManager(){};
     inline void parse_args(int argc, char **argv);
     void build_index(IndexInf_t *&idxInf);
     void handle_queries(IndexInf_t *&idxInf);
     void run();
+
+private:
+    //query funcs
+    void point_query(IndexInf_t *&idxInf){
+        //p(x1,x2,...),mbr(p,p)
+        //完成point to csv
+        
+        //遍历points
+        double avg=0.0;
+        for(auto p:points)
+        {
+            box_t<Dim> query_box(p,p);
+            idxInf->range_query(query_box);
+            avg+=idxInf->get_range_time();
+
+            idxInf->reset_timer();
+        }
+        std::cout<<"Total point query,Avg.Time="<<avg/this->N<<"[us]"<<std::endl;
+    }
+
+    std::string index_type;
+    std::string fpath;
+    size_t N;
+    std::string mode; // query mode:{range,knn,all}
+    Points points;
 };
 
 template <class KEY_TYPE, size_t Dim>
@@ -163,6 +180,7 @@ void IndexManager<KEY_TYPE, Dim>::handle_queries(IndexInf_t *&idxInf)
     {
         if (mode == "range")
         {
+            //do query in IndexManager
             // Handle range queries
             bench::query::batch_range_queries(idxInf, range_queries);
         }
@@ -170,6 +188,11 @@ void IndexManager<KEY_TYPE, Dim>::handle_queries(IndexInf_t *&idxInf)
         {
             // KNN queries
             bench::query::batch_knn_queries(idxInf, knn_queries);
+        }
+        else if(mode== "point")
+        {
+            //test point_query
+            this->point_query(idxInf);
         }
         else if (mode == "all")
         {

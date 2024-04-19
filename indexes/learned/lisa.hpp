@@ -6,7 +6,6 @@
 #include <boost/geometry/index/rtree.hpp>
 
 #include "../pgm/pgm_index.hpp"
-#include "../base_index.hpp"
 #include "../../utils/type.hpp"
 #include "../../utils/common.hpp"
 

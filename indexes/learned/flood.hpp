@@ -11,7 +11,7 @@
 #include <chrono>
 #include <random>
 
-#include "../base_index.hpp"
+
 #include "../../utils/type.hpp"
 #include "../../utils/common.hpp"
 #include "../pgm/pgm_index.hpp"
@@ -61,6 +61,8 @@ namespace bench
                         idx_data.emplace_back(std::get<SortDim>(p));
                     }
 
+                    // try sort
+                    sort(idx_data.begin(),idx_data.end());
                     _local_pgm = new pgm::PGMIndex<double, 16>(idx_data);
                 }
 
@@ -237,16 +239,9 @@ namespace bench
                 }
 
                 std::sort(idx_data.begin(), idx_data.end());
-                            //debug,检查是否是有重复值
-                std::vector<double>::iterator p_it;
-                p_it=unique(idx_data.begin(),idx_data.end());
-                if(p_it!=idx_data.end())
-                {
-                    std::cout<<"存在重复值";
-                    idx_data.erase(p_it,idx_data.end());
-                }
-                this->indexes[i] = new Index(idx_data);
 
+                this->indexes[i] = new Index(idx_data);
+                std::cout<<"complete Dim:"<<i<<std::endl;
                 idx_data.clear();
             }
 

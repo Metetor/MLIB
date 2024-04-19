@@ -20,48 +20,47 @@ mkdir -p ${RESULT_PATH}
 # ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 0 range > "${RESULT_PATH}${index}_${data}_debug02"
 #mkdir -p "${RESULT_PATH}"
 
-#run experiments on default synthetic datasets
-# for data in "uniform_20m_2_1" #"gaussian_20m_2_1" "lognormal_20m_2_1"
-# do
-#   for index in "rtree" "rstar" "zm" "mli" "lisa" "fs"
-#    do
-#        echo "Benchmark ${index} dataset ${data}"
-#        ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 all > "${RESULT_PATH}${index}_${data}"
-#    done
+# run experiments on default synthetic datasets
+for data in  "gaussian_20m_2_1"
+do
+  for index in "rtree" #"rstar" "zm" "mli" "lisa" "fs"
+   do
+       echo "Benchmark ${index} dataset ${data}"
+       ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 all >> "${RESULT_PATH}_${data}"
+   done
 
 #    for index in "kdtree" "ann"
 #    do
 #        echo "Benchmark ${index} dataset ${data}"
-#        ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 knn > "${RESULT_PATH}${index}_${data}"
+#        ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 knn >> "${RESULT_PATH}_${data}"
 #    done
 
 #    for index in "qdtree" "ug" "edg"  "ifi" "flood"
 #    do
 #        echo "Benchmark ${index} dataset ${data}"
-#       ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 range > "${RESULT_PATH}${index}_${data}"
+#       ${BENCH2D_DEFAULT} ${index} "${DEFAULT_SYN_DATA_PATH}$data" 20000000 range >> "${RESULT_PATH}_${data}"
 #    done
-# done
-
-# run experiments on nytaxi
-data="fs"
-for index in "mli" #"rstar" "zm" "mli" "lisa"
-do
-   echo "Benchmark ${index} dataset ${data}"
-   #这里的size我没测，只是选个小一点的数
-   ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 0 range > "${RESULT_PATH}${index}_${data}"
 done
 
-#for index in "kdtree" "ann"
-#do
+# run experiments on nytaxi
+# data="fs"
+# for index in "rtree" "rstar" "zm" "mli" "lisa"
+# do
 #    echo "Benchmark ${index} dataset ${data}"
-#    ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 3680126 knn > "${RESULT_PATH}${index}_${data}"
-#done
+#    ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 0 range > "${RESULT_PATH}${index}_${data}"
+# done
 
-#for index in "qdtree" "ug" "edg" "fs" "ifi" "flood"
-#do
+# for index in "kdtree" "ann"
+# do
 #    echo "Benchmark ${index} dataset ${data}"
-#    ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 3680126 range > "${RESULT_PATH}${index}_${data}"
-#done
+#    ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 0 knn > "${RESULT_PATH}${index}_${data}"
+# done
+
+# for index in "qdtree" "ug" "edg" "fs" "ifi" "flood"
+# do
+#    echo "Benchmark ${index} dataset ${data}"
+#    ${BENCH2D_DEFAULT} ${index} "${REAL_DATA_PATH}$data" 0 range > "${RESULT_PATH}${index}_${data}"
+# done
 # run experiments on FourSquare
 # data="fs"
 # for index in "rtree" "rstar" "zm" "mli" "lisa"

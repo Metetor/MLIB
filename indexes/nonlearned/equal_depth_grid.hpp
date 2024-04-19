@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "../base_index.hpp"
 #include "../indexInterface.h"
 #include "../../utils/type.hpp"
 #include "../../utils/common.hpp"

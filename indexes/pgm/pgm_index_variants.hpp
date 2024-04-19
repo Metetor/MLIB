@@ -115,11 +115,7 @@ public:
         last -= ignore_last;
 
         // Build first level
-        auto in_fun = [&](auto i) {
-            auto x = first[i];
-            auto flag = i > 0 && i + 1u < n && x == first[i - 1] && x != first[i + 1] && x + 1 != first[i + 1];
-            return std::pair<K, size_t>(x + flag, i);
-        };
+        auto in_fun = internal::first_level_in_fun<K, decltype(first)>(first, n);
         auto out_fun = [&](auto cs) { segments.emplace_back(cs); };
         last_n = internal::make_segmentation_par(last_n, Epsilon, in_fun, out_fun);
         levels_offsets.push_back(levels_offsets.back() + last_n);
@@ -625,19 +621,27 @@ private:
 
         auto high_val = (i >> (ef.wl));
         auto sel_high = ef.high_0_select(high_val + 1);
-        auto rank_low = sel_high - high_val;
-        if (0 == rank_low)
+        auto rank_hi = sel_high - high_val;
+        if (0 == rank_hi)
             return {0, ef.low[0] + (high_val << ef.wl)};
 
+        auto rank_lo = high_val == 0 ? 0 : ef.high_0_select(high_val) - high_val + 1;
         auto val_low = i & sdsl::bits::lo_set[ef.wl];
-        do {
-            if (!sel_high)
-                return {0, ef.low[rank_low] + (high_val < ef.wl)};
-            --sel_high;
-            --rank_low;
-        } while (ef.high[sel_high] and ef.low[rank_low] >= val_low);
-        auto h = ef.high[sel_high] ? high_val : sdsl::bits::prev(ef.high.data(), sel_high) - rank_low;
-        return {rank_low, ef.low[rank_low] + (h << ef.wl)};
+        auto count = rank_hi - rank_lo;
+        while (count > 0) {
+            auto step = count / 2;
+            auto mid = rank_lo + step;
+            if (ef.low[mid] < val_low) {
+                rank_lo = mid + 1;
+                count -= step + 1;
+            } else {
+                count = step;
+            }
+        }
+        --rank_lo;
+        sel_high -= rank_hi - rank_lo;
+        auto h = ef.high[sel_high] ? high_val : sdsl::bits::prev(ef.high.data(), sel_high) - rank_lo;
+        return {rank_lo, ef.low[rank_lo] + (h << ef.wl)};
     }
 };
 
@@ -964,11 +968,11 @@ public:
      * @return an iterator pointing to an element inside the query hyperrectangle
      */
     iterator range(const value_type &min, const value_type &max) { return iterator(this, min, max); }
-    
+
     /**
      * (approximate) k-nearest neighbor query.
      * Returns @p k nearest points from query point @p p.
-     * 
+     *
      * @param p the query point.
      * @param k the number of nearest points.
      * @return a vector of k nearest points.
@@ -998,7 +1002,7 @@ public:
         auto k_range_end = [&]<std::size_t... indices>(uint64_t dist, std::index_sequence<indices...>) -> value_type{
             value_type point;
             swallow{
-                (std::get<indices>(point) = std::min(std::get<indices>(p) + dist, this->data.size()), 0)...
+                (std::get<indices>(point) = std::min<uint64_t>(std::get<indices>(p) + dist, this->data.size()), 0)...
             };
             return point;
         };
@@ -1031,7 +1035,7 @@ public:
         uint64_t k_range_dist = dist_from_p(tmp_ans[k - 1], sequence) + 1;
         value_type first = k_range_first(k_range_dist, sequence);
         value_type end = k_range_end(k_range_dist, sequence);
-        
+
         // execute range query and get k nearest points
         std::vector<value_type> ans;
         for (auto it = this->range(first, end); it != this->end(); ++it)
@@ -1042,7 +1046,7 @@ public:
             double dist_r = dist_from_p(rhs, sequence);
             return dist_l < dist_r;
         });
-        
+
         return std::vector<value_type> {ans.begin(), ans.begin() + k};
     }
 

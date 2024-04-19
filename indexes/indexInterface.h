@@ -39,15 +39,15 @@ public:
 
 protected:
     // unit [ms]
-    size_t build_time;
+    size_t build_time=0.0;
     // unit [us]
-    size_t point_time;
+    size_t point_time=0.0;
     // unit [us]
-    size_t range_time;
+    size_t range_time=0.0;
     // unit [us]
-    size_t knn_time;
+    size_t knn_time=0.0;
 
-    size_t point_cnt;
-    size_t range_cnt;
-    size_t knn_cnt;
+    size_t point_cnt=0;
+    size_t range_cnt=0;
+    size_t knn_cnt=0;
 };

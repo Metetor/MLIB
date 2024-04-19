@@ -10,7 +10,7 @@
 #include <boost/geometry/index/rtree.hpp>
 #include <boost/math/statistics/linear_regression.hpp>
 
-#include "../base_index.hpp"
+
 #include "../indexInterface.h"
 #include "../../utils/type.hpp"
 

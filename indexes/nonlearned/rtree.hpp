@@ -79,6 +79,7 @@ namespace bench
             index->query(bgi::covered_by(box), std::back_inserter(return_values));
             //
             auto end = std::chrono::steady_clock::now();
+
             this->range_cnt++;
             this->range_time += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 

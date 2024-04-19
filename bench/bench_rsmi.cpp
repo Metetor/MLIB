@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 {
     typedef IndexInterface<point_t<BENCH_DIM>, BENCH_DIM> IndexInf_t;
     assert(argc >= 4);
-
+    //parse args
     std::string index = argv[1];   // index name
     std::string fname = argv[2];   // data file name
     size_t N = std::stoi(argv[3]); // dataset size
@@ -39,10 +39,10 @@ int main(int argc, char **argv)
 
     std::cout << "====================================" << std::endl;
     std::cout << "Load data: " << fname << std::endl;
-
+    //read points
     Points points;
     bench::utils::read_points(points, fname, N);
-
+    //model path
     std::string pure_fname = get_filename(fname);
     std::string model_path = MODEL_PATH + pure_fname;
     model_path.push_back('/');

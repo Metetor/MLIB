@@ -2,7 +2,6 @@
 
 #include "../../utils/type.hpp"
 #include "../../utils/common.hpp"
-#include "../base_index.hpp"
 
 #include <algorithm>
 #include <array>

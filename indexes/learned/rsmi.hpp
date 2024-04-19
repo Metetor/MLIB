@@ -5,7 +5,6 @@
 #include <chrono>
 #include <queue>
 
-#include "../base_index.hpp"
 #include "../indexInterface.h"
 #include "../rsmi/Constants.h"
 #include "../rsmi/RSMI.h"
