@@ -1,5 +1,5 @@
 # Evaluating Mtulit-dimensional Learned Indices
-This is the source code repo for our emperical study on multi-dimensional learned indices.
+This is the source code repo for our emperical study on multi-dimensional learned indices and the Multi-dimensional Learned Indices Benchmark.
 
 
 ## Compared Methods
