@@ -1,0 +1,10 @@
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct R-tree MaxElements=128
+Points Count:20000000
+Build Time: 4704 [ms]
+Index Size: 330116976 Bytes
+Construct R-tree MaxElements=128
+Points Count:20000000
+Build Time: 4556 [ms]
+Index Size: 330116976 Bytes

@@ -1,0 +1,10 @@
+====================================
+Load data: ../data/synthetic/Default/gaussian_20m_2_1
+Construct ANNKDTree...
+Build Time: 30350 [ms]
+k=1 Avg. Time: 1.99549 [us]
+k=10 Avg. Time: 9.47 [us]
+k=100 Avg. Time: 58.62 [us]
+k=500 Avg. Time: 273.21 [us]
+k=1000 Avg. Time: 666.03 [us]
+k=10000 Avg. Time: 25242.1 [us]

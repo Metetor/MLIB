@@ -1,0 +1,7 @@
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct R-tree MaxElements=128
+Points Count:20000000
+Build Time: 3993 [ms]
+Index Size: 330116976 Bytes
+Total point query,Avg.Time=1.03089[us]

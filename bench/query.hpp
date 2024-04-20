@@ -83,72 +83,41 @@ namespace bench
         // selectivity = range_count(q_box) / N
         // for each selectivity we generate bx_num=10 random boxes roughly match the selectivity
         template <size_t dim>
-        static std::vector<std::pair<box_t<dim>, size_t>> sample_range_queries(points_t<dim> &points, size_t bx_num = 10)
+        static std::vector<box_t<dim>> sample_range_queries(points_t<dim> &points, size_t bx_num = 20)
         {
             int sel_num = 5;
-            double selectivities[sel_num] = {0.01, 0.05, 0.1, 0.2, 0.3};
+            double selectivities[sel_num] = {0.01, 0.05, 0.1, 0.2, 0.3, 0.4};
             auto corner_points = sample_point_queries(points, bx_num);
             long long N = points.size();
             // bench::index::FullScan<dim> fs(points);
-            //这里还是用rtree吧，更快
-            bench::index::RTreeInterface<point_t<dim>, dim> *rt=new bench::index::RTreeInterface<point_t<dim>, dim>();
-            // bench::index::FSInterface<point_t<dim>, dim> *FSI = new bench::index::FSInterface<point_t<dim>, dim>();
-            // FSI->build(points);
-            rt->build(points);
+            // 这里还是用rtree吧，更快
+            // bench::index::RTreeInterface<point_t<dim>, dim> *rt = new bench::index::RTreeInterface<point_t<dim>, dim>();
+            // // bench::index::FSInterface<point_t<dim>, dim> *FSI = new bench::index::FSInterface<point_t<dim>, dim>();
+            // // FSI->build(points);
+            // rt->build(points);
 
             std::pair<point_t<dim>, point_t<dim>> min_max = min_and_max(points);
 
-            std::vector<std::pair<box_t<dim>, size_t>> range_queries;
+            std::vector<box_t<dim>> range_queries;
             range_queries.reserve(sel_num * bx_num);
 
             for (int i = 0; i < sel_num; ++i)
             {
-                for (auto &cp : corner_points)
+                for (auto &point : corner_points)
                 {
-                    // roughly gen another_corner
                     point_t<dim> another_corner;
                     for (size_t d = 0; d < dim; ++d)
                     {
-
-                        // // this is a roughly estimation of selectivity by assuming
-                        // // uniform distribution and dimension independence
+                        // this is a roughly estimation of selectivity by assuming
+                        // uniform distribution and dimension independence
                         double step = (min_max.second[d] - min_max.first[d]) * std::pow(selectivities[i], 1.0 / dim);
                         // make sure the generated box is within the data range
-                        another_corner[d] = std::min(cp[d] + step, min_max.second[d]);
+                        another_corner[d] = std::min(point[d] + step, min_max.second[d]);
                     }
-                    // 计算盒子中的数据点数量
-                    box_t<dim> tmp(cp, another_corner);
-                    int num_points_in_box = rt->range_query(tmp).size();
-                    double sel_in_box = static_cast<double>(num_points_in_box) / N;
-                    double error=(sel_in_box - selectivities[i])/selectivities[i];
-
-                    // int cnt=0;
-                    do
-                    {
-                        // 使用贪心修正一下边界
-                        for(int d=0;d<dim;d++){
-                            double range=another_corner[d]-cp[d];
-                            double mid=(another_corner[d]+cp[d])/2;
-                            double adjust=error*0.8;//alpha设置为0.2
-                            double new_range = std::min(min_max.second[d], range * (1-adjust));
-
-                            cp[d]=std::max(min_max.first[d], mid - new_range / 2);
-                            another_corner[d]=std::min(min_max.second[d], mid + new_range / 2);
-                        }
-                         //update sel_in_box
-                        box_t<dim> tmp(cp, another_corner);
-                        num_points_in_box = rt->range_query(tmp).size();
-                        sel_in_box = static_cast<double>(num_points_in_box) / N;
-
-                        error=(sel_in_box - selectivities[i])/selectivities[i];
-                        // if(cnt++%10==0)
-                        //     std::cout<<"epoch:"<<cnt<<";error:"<<error<<std::endl;
-                    } while (abs(error)>0.1);
-                    box_t<dim> box(cp, another_corner);
-                    range_queries.emplace_back(box, rt->range_query(box).size());
+                    box_t<dim> box(point, another_corner);
+                    range_queries.emplace_back(box);
                 }
             }
-
             return range_queries;
         }
 
@@ -169,16 +138,16 @@ namespace bench
         }
 
         template <class Index, size_t Dim>
-        static void batch_range_queries(Index *&index, std::vector<std::pair<box_t<Dim>, size_t>> range_queries)
+        static void batch_range_queries(Index *&index, std::vector<box_t<Dim>> range_queries)
         {
             // pair (range_cnt, time)
-            std::vector<std::pair<size_t, long>> range_time;
-            range_time.reserve(range_queries.size());
+            long long N = index->count();
+            std::vector<std::pair<double, long>> range_time;
 
             for (auto &box : range_queries)
             {
-                index->range_query(box.first);
-                range_time.emplace_back(box.second, index->get_range_time());
+                size_t points_num=index->range_query(box).size();
+                range_time.push_back({points_num * 1.0 / N, index->get_range_time()});
                 index->reset_timer();
             }
 
@@ -190,51 +159,93 @@ namespace bench
                       });
 
             // print time ordered by selectivity
-            size_t bucket_size = range_time.size() / 5;
-            size_t N = index->count();
-            std::vector<std::pair<size_t, long>> temp;
-            size_t cnt = 0;
+            // size_t bucket_size = range_time.size() / 10;
 
-            std::cout << "Sel=[";
-            for (auto rt : range_time)
-            {
-                std::cout << rt.first / (1.0 * N) << ",";
-            }
-            std::cout << "]" << std::endl;
+            // 定义选择度分级
+            std::vector<std::pair<double, double>> selectivity_levels = {
+                {0, 0.03},
+                {0.03, 0.08},
+                {0.08, 0.15},
+                {0.15, 0.25},
+                {0.25, 0.35},
+                {0.35, 0.45},
+                {0.45, 0.55},
+                {0.55, 0.75},
+                {0.75, 1.0}};
 
-            for (auto rt : range_time)
+            // 创建一个映射，用于存储每个级别的时间总和和计数
+            std::map<std::pair<double, double>, std::pair<long, int>> level_stats;
+
+            // 遍历range_time，将时间加到相应选择度级别的统计中
+            for (const auto &pair : range_time)
             {
-                if (cnt == bucket_size)
+                double selectivity = pair.first;
+                long time = pair.second;
+
+                // 找到当前选择度对应的级别
+                for (const auto &level : selectivity_levels)
                 {
-                    double sel_lo = temp.front().first / (1.0 * N);
-                    double sel_hi = temp.back().first / (1.0 * N);
-                    double avg = 0.0;
-                    for (auto &tt : temp)
+                    if (selectivity >= level.first && selectivity < level.second)
                     {
-                        avg += tt.second;
+                        level_stats[level].first += time; // 累加时间
+                        level_stats[level].second++;      // 增加计数
+                        break;
                     }
-                    std::cout << "Sel=[" << sel_lo << ", " << sel_hi << "]"
-                              << " Avg. Time: " << avg / bucket_size << " [ms]" << std::endl;
-                    temp.clear();
-                    temp.emplace_back(rt);
-                    cnt = 1;
-                }
-                else
-                {
-                    temp.emplace_back(rt);
-                    cnt++;
                 }
             }
 
-            double sel_lo = temp.front().first / (1.0 * N);
-            double sel_hi = temp.back().first / (1.0 * N);
-            double avg = 0.0;
-            for (auto &tt : temp)
+            // 输出每个级别的平均时间
+            for (const auto &entry : level_stats)
             {
-                avg += tt.second;
+                double avg_time = static_cast<double>(entry.second.first) / entry.second.second;
+                std::cout << "Selectivity level: [" << entry.first.first << ", " << entry.first.second << "), ";
+                std::cout << "Average time: " << avg_time <<"[us]"<<std::endl;
             }
-            std::cout << "Sel=[" << sel_lo << ", " << sel_hi << "]"
-                      << " Avg. Time: " << avg / bucket_size << " [us]" << std::endl;
+
+            // std::vector<std::pair<size_t, long>> temp;
+            // size_t cnt = 0;
+
+            // // std::cout << "Sel=[";
+            // // for (auto rt : range_time)
+            // // {
+            // //     std::cout << rt.first / (1.0 * N) << ",";
+            // // }
+            // // std::cout << "]" << std::endl;
+
+            // for (auto rt : range_time)
+            // {
+
+            //     if (cnt == bucket_size)
+            //     {
+            //         double sel_lo = temp.front().first / (1.0 * N);
+            //         double sel_hi = temp.back().first / (1.0 * N);
+            //         double avg = 0.0;
+            //         for (auto &tt : temp)
+            //         {
+            //             avg += tt.second;
+            //         }
+            //         std::cout << "Sel=[" << sel_lo << ", " << sel_hi << "]"
+            //                   << " Avg. Time: " << avg / bucket_size << " [ms]" << std::endl;
+            //         temp.clear();
+            //         temp.emplace_back(rt);
+            //         cnt = 1;
+            //     }
+            //     else
+            //     {
+            //         temp.emplace_back(rt);
+            //         cnt++;
+            //     }
+            // }
+
+            // double sel_lo = temp.front().first / (1.0 * N);
+            // double sel_hi = temp.back().first / (1.0 * N);
+            // double avg = 0.0;
+            // for (auto &tt : temp)
+            // {
+            //     avg += tt.second;
+            // }
+            // std::cout << "Sel=[" << sel_lo << ", " << sel_hi << "]"
+            //           << " Avg. Time: " << avg / bucket_size << " [us]" << std::endl;
         }
     }
 }

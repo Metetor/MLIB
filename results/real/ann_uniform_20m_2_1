@@ -1,0 +1,10 @@
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct ANNKDTree...
+Build Time: 32985 [ms]
+k=1 Avg. Time: 0.502905 [us]
+k=10 Avg. Time: 8.5 [us]
+k=100 Avg. Time: 53.81 [us]
+k=500 Avg. Time: 297.84 [us]
+k=1000 Avg. Time: 632.2 [us]
+k=10000 Avg. Time: 25461.2 [us]

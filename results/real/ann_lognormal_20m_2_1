@@ -1,0 +1,10 @@
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct ANNKDTree...
+Build Time: 32884 [ms]
+k=1 Avg. Time: 1.04033 [us]
+k=10 Avg. Time: 13.94 [us]
+k=100 Avg. Time: 91.08 [us]
+k=500 Avg. Time: 392.19 [us]
+k=1000 Avg. Time: 727.18 [us]
+k=10000 Avg. Time: 25691.8 [us]

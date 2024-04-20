@@ -1,0 +1,315 @@
+====================================
+Load data: ../data/synthetic/Default/gaussian_20m_2_1
+Construct R-tree MaxElements=128
+Points Count:20000000
+Build Time: 12580 [ms]
+Index Size: 330116976 Bytes
+Construct R-tree MaxElements=128
+Points Count:20000000
+Build Time: 9900 [ms]
+Index Size: 330116976 Bytes
+epoch:1;error:5.64563
+epoch:11;error:3.26825
+epoch:21;error:2.23498
+epoch:31;error:1.65853
+epoch:41;error:1.29105
+epoch:51;error:1.03515
+epoch:61;error:0.850765
+epoch:71;error:0.70986
+epoch:81;error:0.60161
+epoch:91;error:0.51285
+epoch:1;error:7.15688
+epoch:11;error:3.8156
+epoch:21;error:2.52119
+epoch:31;error:1.83255
+epoch:41;error:1.41003
+epoch:51;error:1.12246
+epoch:61;error:0.916895
+epoch:71;error:0.762375
+epoch:81;error:0.641325
+epoch:91;error:0.546105
+epoch:1;error:4.02006
+epoch:11;error:2.59355
+epoch:21;error:1.86597
+epoch:31;error:1.42468
+epoch:41;error:1.13103
+epoch:51;error:0.92091
+epoch:61;error:0.76328
+epoch:71;error:0.64133
+epoch:81;error:0.54511
+epoch:1;error:13.7295
+epoch:11;error:5.32019
+epoch:21;error:3.18495
+epoch:31;error:2.20796
+epoch:41;error:1.64605
+epoch:51;error:1.287
+epoch:61;error:1.03586
+epoch:71;error:0.853975
+epoch:81;error:0.71434
+epoch:91;error:0.60452
+epoch:101;error:0.516915
+epoch:1;error:9.56022
+epoch:11;error:4.4852
+epoch:21;error:2.83335
+epoch:31;error:2.01738
+epoch:41;error:1.52892
+epoch:51;error:1.20744
+epoch:61;error:0.98002
+epoch:71;error:0.81008
+epoch:81;error:0.679405
+epoch:91;error:0.577265
+epoch:101;error:0.49524
+epoch:1;error:5.99273
+epoch:11;error:3.41149
+epoch:21;error:2.31485
+epoch:31;error:1.7081
+epoch:41;error:1.32594
+epoch:51;error:1.06367
+epoch:61;error:0.87228
+epoch:71;error:0.729155
+epoch:81;error:0.6165
+epoch:91;error:0.526325
+epoch:1;error:0.48881
+epoch:1;error:10.5745
+epoch:11;error:4.72644
+epoch:21;error:2.93998
+epoch:31;error:2.07295
+epoch:41;error:1.56408
+epoch:51;error:1.23288
+epoch:61;error:0.99809
+epoch:71;error:0.825085
+epoch:81;error:0.69215
+epoch:91;error:0.58854
+epoch:101;error:0.50529
+epoch:1;error:5.38564
+epoch:11;error:3.16813
+epoch:21;error:2.18381
+epoch:31;error:1.62617
+epoch:41;error:1.26987
+epoch:51;error:1.02264
+epoch:61;error:0.841485
+epoch:71;error:0.703855
+epoch:81;error:0.59476
+epoch:91;error:0.50865
+epoch:1;error:0.77088
+epoch:11;error:0.635525
+epoch:21;error:0.533165
+epoch:1;error:1.66305
+epoch:11;error:0.479796
+epoch:1;error:0.547189
+epoch:1;error:0.264459
+epoch:1;error:3.92472
+epoch:11;error:0.861681
+epoch:1;error:0.877749
+epoch:1;error:6.25593
+epoch:11;error:1.06845
+epoch:1;error:-0.585746
+epoch:1;error:1.54538
+epoch:11;error:0.461996
+epoch:1;error:-0.004144
+epoch:1;error:0.453124
+epoch:1;error:-0.037334
+epoch:1;error:-0.207215
+epoch:1;error:-0.302514
+epoch:1;error:0.0530295
+epoch:1;error:-0.208394
+epoch:1;error:1.5197
+epoch:1;error:-0.692542
+epoch:1;error:-0.189053
+epoch:1;error:-0.437358
+epoch:1;error:-0.0324345
+epoch:1;error:-0.386523
+epoch:1;error:-0.462487
+epoch:1;error:-0.532985
+epoch:1;error:-0.325929
+epoch:1;error:-0.445955
+epoch:1;error:-0.171601
+epoch:1;error:-0.595934
+epoch:1;error:-0.447119
+epoch:1;error:-0.567548
+epoch:1;error:-0.398909
+epoch:1;error:-0.488088
+epoch:1;error:-0.553289
+epoch:1;error:-0.523989
+epoch:1;error:-0.385953
+epoch:1;error:-0.445651
+epoch:1;error:-0.37816
+epoch:1;error:-0.574202
+epoch:1;error:-0.517912
+epoch:1;error:-0.423502
+epoch:1;error:-0.472821
+Sel=[0.0148881,0.0149354,0.0149362,0.0149522,0.0149524,0.0149649,0.0149777,0.014978,0.0149809,0.014986,0.0254999,0.0497928,0.0557615,0.0562642,0.0632229,0.0697486,0.0726562,0.0730998,0.0736494,0.0737388,0.0739898,0.0744091,0.0744618,0.0791606,0.0792785,0.0810947,0.0962666,0.0967565,0.105303,0.107503,0.107865,0.110576,0.110809,0.117161,0.118893,0.120218,0.122695,0.134814,0.140917,0.153574,0.158154,0.162955,0.16568,0.166305,0.168061,0.172949,0.177168,0.1801,0.184214,0.186552,]
+Sel=[0.0148881, 0.014986] Avg. Time: 2318 [ms]
+Sel=[0.0497928, 0.0739898] Avg. Time: 24997.1 [ms]
+Sel=[0.0744618, 0.110576] Avg. Time: 39260.1 [ms]
+Sel=[0.117161, 0.16568] Avg. Time: 54353.6 [ms]
+Sel=[0.168061, 0.186552] Avg. Time: 37008.9 [us]
+k=1 Avg. Time: 6.61 [us]
+k=10 Avg. Time: 8.47 [us]
+k=100 Avg. Time: 13.83 [us]
+k=500 Avg. Time: 30.57 [us]
+k=1000 Avg. Time: 43.99 [us]
+k=10000 Avg. Time: 247.68 [us]
+====================================
+Load data: ../data/synthetic/Default/gaussian_20m_2_1
+Construct R-tree MaxElements=128
+Points Count:20000000
+Build Time: 4357 [ms]
+Index Size: 330116976 Bytes
+Construct R-tree MaxElements=128
+Points Count:20000000
+Build Time: 4029 [ms]
+Index Size: 330116976 Bytes
+epoch:1;error:5.39867
+epoch:11;error:2.47791
+epoch:21;error:1.52424
+epoch:31;error:1.04967
+epoch:41;error:0.76872
+epoch:51;error:0.586415
+epoch:61;error:0.457875
+epoch:71;error:0.364845
+epoch:81;error:0.294405
+epoch:91;error:0.24015
+epoch:101;error:0.19656
+epoch:1;error:6.77511
+epoch:11;error:2.81189
+epoch:21;error:1.67351
+epoch:31;error:1.13614
+epoch:41;error:0.82636
+epoch:51;error:0.6243
+epoch:61;error:0.48534
+epoch:71;error:0.385515
+epoch:81;error:0.311745
+epoch:91;error:0.25469
+epoch:101;error:0.20921
+epoch:1;error:3.88959
+epoch:11;error:2.05037
+epoch:21;error:1.32245
+epoch:31;error:0.93522
+epoch:41;error:0.694815
+epoch:51;error:0.532855
+epoch:61;error:0.419
+epoch:71;error:0.334295
+epoch:81;error:0.269835
+epoch:91;error:0.22005
+epoch:1;error:12.3217
+epoch:11;error:3.57962
+epoch:21;error:1.97596
+epoch:31;error:1.29393
+epoch:41;error:0.92212
+epoch:51;error:0.69045
+epoch:61;error:0.53231
+epoch:71;error:0.418895
+epoch:81;error:0.33665
+epoch:91;error:0.27295
+epoch:101;error:0.2239
+epoch:1;error:8.88582
+epoch:11;error:3.17647
+epoch:21;error:1.82474
+epoch:31;error:1.21902
+epoch:41;error:0.877275
+epoch:51;error:0.65947
+epoch:61;error:0.51086
+epoch:71;error:0.40538
+epoch:81;error:0.32522
+epoch:91;error:0.2645
+epoch:101;error:0.216995
+epoch:1;error:5.72249
+epoch:11;error:2.56953
+epoch:21;error:1.56744
+epoch:31;error:1.07801
+epoch:41;error:0.789155
+epoch:51;error:0.60065
+epoch:61;error:0.46939
+epoch:71;error:0.373735
+epoch:81;error:0.30058
+epoch:91;error:0.24419
+epoch:101;error:0.200245
+epoch:1;error:0.483915
+epoch:11;error:0.37368
+epoch:21;error:0.29343
+epoch:31;error:0.23443
+epoch:1;error:9.75679
+epoch:11;error:3.29957
+epoch:21;error:1.87118
+epoch:31;error:1.24333
+epoch:41;error:0.892355
+epoch:51;error:0.671225
+epoch:61;error:0.520965
+epoch:71;error:0.412645
+epoch:81;error:0.33163
+epoch:91;error:0.269225
+epoch:101;error:0.220515
+epoch:1;error:5.16111
+epoch:11;error:2.4176
+epoch:21;error:1.49705
+epoch:31;error:1.03691
+epoch:41;error:0.76128
+epoch:51;error:0.5804
+epoch:61;error:0.454135
+epoch:71;error:0.361495
+epoch:81;error:0.291555
+epoch:91;error:0.238075
+epoch:1;error:0.761225
+epoch:11;error:0.56363
+epoch:21;error:0.43256
+epoch:31;error:0.339335
+epoch:41;error:0.26937
+epoch:51;error:0.216535
+epoch:1;error:1.38587
+epoch:11;error:0.244693
+epoch:1;error:0.43943
+epoch:1;error:0.179287
+epoch:1;error:3.02187
+epoch:11;error:0.440929
+epoch:1;error:0.732077
+epoch:1;error:4.01739
+epoch:11;error:0.513467
+epoch:1;error:-0.629597
+epoch:11;error:-0.244943
+epoch:1;error:1.30064
+epoch:11;error:0.239088
+epoch:1;error:-0.064547
+epoch:1;error:0.348843
+epoch:1;error:-0.156919
+epoch:1;error:-0.305627
+epoch:1;error:-0.313695
+epoch:1;error:-0.059734
+epoch:1;error:-0.301553
+epoch:1;error:0.95187
+epoch:1;error:-0.496646
+epoch:1;error:-0.27961
+epoch:1;error:-0.427069
+epoch:1;error:-0.154552
+epoch:1;error:-0.354678
+epoch:1;error:-0.34539
+epoch:1;error:-0.391234
+epoch:1;error:-0.268329
+epoch:1;error:-0.310808
+epoch:1;error:-0.181758
+epoch:1;error:-0.354207
+epoch:1;error:-0.325159
+epoch:1;error:-0.310724
+epoch:1;error:-0.400804
+epoch:1;error:-0.286478
+epoch:1;error:-0.351818
+epoch:1;error:-0.289212
+epoch:1;error:-0.285117
+epoch:1;error:-0.299025
+epoch:1;error:-0.309147
+epoch:1;error:-0.354327
+epoch:1;error:-0.317499
+epoch:1;error:-0.300768
+epoch:1;error:-0.238148
+Sel=[0.0119648,0.0119656,0.0119689,0.0119714,0.0119718,0.0119858,0.0119895,0.0119927,0.0119981,0.0119985,0.040654,0.0467726,0.0589643,0.0591599,0.0593114,0.0594578,0.0595041,0.0595824,0.0596579,0.0597738,0.0815866,0.0828973,0.0830707,0.0838205,0.0839563,0.0843081,0.0845449,0.0849672,0.0940266,0.115701,0.160841,0.161403,0.163649,0.163734,0.168551,0.169113,0.171646,0.172697,0.173869,0.181142,0.240211,0.240257,0.240995,0.244881,0.24497,0.254117,0.256813,0.263222,0.26372,0.26874,]
+Sel=[0.0119648, 0.0119985] Avg. Time: 1558.1 [ms]
+Sel=[0.0467726, 0.0815866] Avg. Time: 24459.5 [ms]
+Sel=[0.0830707, 0.161403] Avg. Time: 37215.1 [ms]
+Sel=[0.163734, 0.240995] Avg. Time: 74208.2 [ms]
+Sel=[0.24497, 0.26874] Avg. Time: 64935.8 [us]
+k=1 Avg. Time: 6.35 [us]
+k=10 Avg. Time: 7.59 [us]
+k=100 Avg. Time: 13.51 [us]
+k=500 Avg. Time: 31.45 [us]
+k=1000 Avg. Time: 44.17 [us]
+k=10000 Avg. Time: 251.99 [us]

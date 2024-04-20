@@ -1,0 +1,59 @@
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct R-tree MaxElements=128
+Points Count:20000000
+Build Time: 13578 [ms]
+Index Size: 330116976 Bytes
+Total point query,Avg.Time=1.1041[us]
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct R*-tree MaxElements=128
+Build Time: 157782 [ms]
+Index Size: 469293728 Bytes
+Total point query,Avg.Time=2.23921[us]
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct ZM-Index Epsilon=64
+Build Time: 2351 [ms]
+Index Size: 160026064 Bytes
+Total point query,Avg.Time=0.0061416[us]
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct ML-Index: partition=50 eps=64
+been sorted
+pgm build success
+Build Time: 113813 [ms]
+Index Size: 160042096 Bytes
+Total point query,Avg.Time=1.05194[us]
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct LISA K=100 Epsilon=64
+Build Time: 10392 [ms]
+Index Size: 160561672 Bytes
+Total point query,Avg.Time=6.27408[us]
+
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct Uniform Grid K=100
+Build Time: 3042 [ms]
+Index Size: 240064 Bytes
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct IFIndex (on Rtree) LeafNodeCap=2000 MaxElements=32 sort_dim=0
+Check0Check01Check02Check03Build Time: 20644 [ms]
+Index Size: 161173960 Bytes
+Total point query,Avg.Time=0.277861[us]
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct Flood K=100 Epsilon=64 SortDim=1
+complete Dim:0
+Build Time: 6883 [ms]
+Index Size: 160356392 Bytes
+Total point query,Avg.Time=0.0424258[us]
+====================================
+Load data: ../data/synthetic/Default/uniform_20m_2_1
+Construct Uniform Grid K=100
+Build Time: 536 [ms]
+Index Size: 240064 Bytes

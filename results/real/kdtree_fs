@@ -1,0 +1,10 @@
+====================================
+Load data: ../data/real/fs
+Construct ANNKDTree...
+Build Time: 4463 [ms]
+k=1 Avg. Time: 0.98066 [us]
+k=10 Avg. Time: 5.88 [us]
+k=100 Avg. Time: 38.33 [us]
+k=500 Avg. Time: 210.41 [us]
+k=1000 Avg. Time: 474.9 [us]
+k=10000 Avg. Time: 14073 [us]

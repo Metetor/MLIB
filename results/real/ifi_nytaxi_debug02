@@ -1,0 +1,5 @@
+====================================
+Load data: ../data/synthetic/Default/nytaxi
+Construct IFIndex (on Rtree) LeafNodeCap=2000 MaxElements=32 sort_dim=0
+Check0Check01Check02Check03Check1Check2Check3Check4Build Time: 0 [ms]
+Index Size: 0 Bytes

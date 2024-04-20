@@ -1,0 +1,50 @@
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct R-tree MaxElements=128
+Points Count:20000000
+Build Time: 4259 [ms]
+Index Size: 330116976 Bytes
+Total point query,Avg.Time=1.09541[us]
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct R*-tree MaxElements=128
+Build Time: 141279 [ms]
+Index Size: 461918248 Bytes
+Total point query,Avg.Time=8.66027[us]
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct ZM-Index Epsilon=64
+Build Time: 1431 [ms]
+Index Size: 160039928 Bytes
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct ZM-Index Epsilon=64
+Build Time: 4259 [ms]
+Index Size: 160039928 Bytes
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct ML-Index: partition=50 eps=64
+been sorted
+pgm build success
+Build Time: 107461 [ms]
+Index Size: 160038552 Bytes
+Total point query,Avg.Time=1.93158[us]
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct LISA K=100 Epsilon=64
+Build Time: 10008 [ms]
+Index Size: 160561824 Bytes
+Total point query,Avg.Time=6.44934[us]
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct IFIndex (on Rtree) LeafNodeCap=2000 MaxElements=32 sort_dim=0
+Check0Check01Check02Check03Build Time: 14336 [ms]
+Index Size: 161173960 Bytes
+Total point query,Avg.Time=0.188577[us]
+====================================
+Load data: ../data/synthetic/Default/lognormal_20m_2_1
+Construct Flood K=100 Epsilon=64 SortDim=1
+complete Dim:0
+Build Time: 6643 [ms]
+Index Size: 160390472 Bytes
+Total point query,Avg.Time=0.0157689[us]
